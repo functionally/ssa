@@ -9,3 +9,4 @@ tmp/
 .ipynb_checkpoints/
 .jupyter/
 .local/
+*.tar.gz
