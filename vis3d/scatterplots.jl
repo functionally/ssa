@@ -1,3 +1,6 @@
+using Pkg
+Pkg.activate(".")
+
 using InfoVis
 using InfoVis.Primitives
 
@@ -15,17 +18,20 @@ function normalize(xs)
   transform(dt, xs)
 end
 
-cm = colormap("RdBu") |> reverse
+cm = colormap("RdBu") |> reverse;
 
 function makecolor(x)
   cm[ceil(Int64, 1 + (length(cm) - 1) * x)]
 end
 
 
-z = connect("ws://104.198.152.159:42042/infovis/v4/julia");
+z = connect(string("ws://", true ? "104.198.152.159" : "127.0.0.1", ":42041/infovis/v4/julia"));
+
+sleep(5);
 
 @async responses(z)
 
+sleep(5);
 
 xs = CSV.read("../xs-3d-20200322a.csv");
 ys = CSV.read("../ys-3d-20200322a.csv");
@@ -77,5 +83,7 @@ for (a, b, c) in cases
   z |> axes(labels = [string(a), string(b), string(c)], frame = f) |>
        scatterplot(w, :id, a, b, c, color = :tcolor, frame = f)
 end
+
+sleep(5);
 
 z |> stop

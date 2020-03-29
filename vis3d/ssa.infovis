@@ -1,0 +1,17 @@
+verbose
+
+serve 0.0.0.0:42041 /infovis/v4/
+
+relay julia-input
+relay julia-output
+
+websocket julia
+add-source julia-input julia
+add-sink julia-output julia
+
+absorber julia-printer
+add-sink julia-input julia-printer
+
+websocket julia-demo
+add-sink julia-input julia-demo
+add-source julia-output julia-demo
