@@ -1,17 +1,23 @@
 verbose
 
-serve 0.0.0.0:42041 /infovis/v4/
+serve 0.0.0.0:42043 /infovis/v4/ ../certificate.crt ../private.key
 
-relay julia-input
-relay julia-output
+relay input
+relay output
+converter translator show tool offset
 
-websocket julia
-add-source julia-input julia
-add-sink julia-output julia
+websocket        julia
+add-sink  output julia
 
-absorber julia-printer
-add-sink julia-input julia-printer
+absorber       monitor
+add-sink input monitor
 
-websocket julia-demo
-add-sink julia-input julia-demo
-add-source julia-output julia-demo
+websocket           client
+add-sink output     client
+add-sink translator client
+
+websocket             master
+add-sink   output     master
+add-source translator master
+
+files ssa ssa-*.pbb
