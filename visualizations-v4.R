@@ -92,6 +92,8 @@ curv <- merge(
 )[, .(case, t, x1, x2, x3, y1, y2, y3, c1, c2, c3)]
 curv %>% head
 
+save(xs3d, ys3d, s3d, y, dy, ddy, curv, file="visualizations-v4.rdata")
+
 ggplot(curv, aes(x=x1, y=x2, color=t, size=c1)) + geom_point() + ggtitle("c1")
 
 ggplot(curv, aes(x=x2, y=x3, color=t, size=c1)) + geom_point() + ggtitle("c1")

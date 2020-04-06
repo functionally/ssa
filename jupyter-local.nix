@@ -86,6 +86,7 @@ let
         regclass
         reshape2
         rpart
+        rTensor
         shiny
         shinyjs
         smbinning
