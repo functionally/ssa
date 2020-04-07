@@ -6,4 +6,4 @@ set -x
                  --demo 0.0.0.0:42043 /infovis/v4/client \
                  ../certificate.crt                      \
                  ../private.key                          \
-                 ssa-*.pbb
+                 ssa-v5-*.pbb

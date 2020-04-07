@@ -137,6 +137,7 @@ y.maxdelta <- apply(
 y.maxdelta %>% dim
 
 z <- data.table(melt(y.maxdelta))[, rank := rank(value, ties="random")]
+write.table(z, file="discrepancies-v5.csv", sep=",", row.names=FALSE)
 z %>% head
 
 ggplot(z, aes(x=x2, y=x3, fill=value)) +

@@ -52,9 +52,9 @@ version = "0.20.2"
 
 [[DataStructures]]
 deps = ["InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "5a431d46abf2ef2a4d5d00bd0ae61f651cf854c8"
+git-tree-sha1 = "73eb18320fe3ba58790c8b8f6f89420f0a622773"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.17.10"
+version = "0.17.11"
 
 [[DataValueInterfaces]]
 git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
@@ -95,7 +95,7 @@ uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 version = "0.8.13"
 
 [[InfoVis]]
-deps = ["Colors", "DataFrames", "ProtoBuf", "StaticArrays", "WebSockets"]
+deps = ["Colors", "DataFrames", "MbedTLS", "ProtoBuf", "StaticArrays", "WebSockets"]
 path = "/scratch/code.functionally.io/infovis-parallel/julia"
 uuid = "4f5107b8-3ecf-11ea-2e51-6589d43209bc"
 version = "0.4.0"
