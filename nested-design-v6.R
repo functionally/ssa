@@ -295,7 +295,7 @@ for (k in 1:250) {
     # Perform pending computations.
     ys <- ssa.compute(f, ts, xs, NULL)
     # Measure divergences.
-    ssa.measure(xs, ys, focus = (sqrt(5) + 1) / 2)
+    ssa.measure(xs, ys, focus = 1)
     # Select where to probe further.
     result <- ssa.probe(xs)
     # Tally results.
