@@ -3,6 +3,7 @@ require(abind)
 require(data.table)
 require(deSolve)
 require(magrittr)
+require(np)
 require(rTensor)
 
 require(ggplot2)
@@ -465,3 +466,27 @@ for (u1 in unique(us$u)) {
         ggtitle(paste("split at", u1))
     print(g)
 }
+
+tus <- us[, .(1), by=.(k, u)]
+une <- NULL
+for (row in 1:nrow(tus)) {
+    z <- merge(tus[row], uxys.wide, by=c("k", "u"))
+    une <- rbind(
+        une,
+        cbind(
+            tus[row, .(k, u)],
+            Tn=npdeneqtest(
+                z[s == "below split", .(y1, y2, y3)],
+                z[s == "above split", .(y1, y2, y3)],
+                boot.num=250
+            )$Tn
+        )
+    )
+}
+une %>% dim
+
+ggplot(une, aes(x=u, y=Tn, color=k)) +
+    geom_point() +
+    geom_line() +
+    xlab("split location") +
+    ylab("test statistic (standardized)")

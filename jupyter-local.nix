@@ -78,6 +78,7 @@ let
         mnlogit
         multinomRob
         nnet
+        np
         plotrix
         quantmod
         quantreg
