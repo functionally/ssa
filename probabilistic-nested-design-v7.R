@@ -490,3 +490,56 @@ ggplot(une, aes(x=u, y=Tn, color=k)) +
     geom_line() +
     xlab("split location") +
     ylab("test statistic (standardized)")
+
+twosample_test_resample <- function(xy, n) {
+    rows <- nrow(xy)
+    result <- cbind(
+        n=0,
+        Tn=npdeneqtest(
+            xy[s == "below split", .(y1, y2, y3)],
+            xy[s == "above split", .(y1, y2, y3)],
+            boot.num=250
+        )$Tn
+    )
+    for (i in 1:n) {
+        xy.sample <- xy[sample(1:rows, rows, replace=TRUE)]
+        xy.sample[, sequence:=1:rows]
+        xy.sample <- merge(tus[row], xy.sample, by=c("k", "u"))
+        result <- rbind(
+            result,
+            cbind(
+                n=i,
+                Tn=npdeneqtest(
+                    xy.sample[s == "below split", .(y1, y2, y3)],
+                    xy.sample[s == "above split", .(y1, y2, y3)],
+                    boot.num=250
+                )$Tn
+            )
+        )
+    }
+    result
+}
+
+tus <- us[, .(1), by=.(k, u)]
+une <- NULL
+for (row in 1:nrow(tus))
+    une <- rbind(
+        une,
+        cbind(
+            tus[row, .(k, u)],
+            twosample_test_resample(merge(tus[row], uxys.wide, by=c("k", "u")), 15)
+        )
+    )
+une %>% dim
+
+une %>% summary
+
+ggplot(une[n != 0], aes(x=u, y=Tn)) +
+    geom_boxplot(outlier.shape=NA) +
+    geom_point(data=une[n == 0], aes(x=u, y=Tn)) +
+    facet_grid(k ~ .) +
+    guides(color=guide_legend(title="Data Subset")) +
+    xlab("split location") +
+    ylab("test statistic (standardized)")
+
+
