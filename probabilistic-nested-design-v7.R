@@ -460,62 +460,34 @@ for (u1 in unique(us$u)) {
         coord_cartesian(ylim = c(0, 1.25))  +
         xlab("Indices of x and y") +
         ylab("First-Order Sensitivity Index") +
-        guides(color=guide_legend(title="Data Subset")) +
+        guides(color=guide_legend(title="data subset")) +
         geom_point(data=us.x[u1 == u & n == 0], aes(x=i, y=s.x, color=s)) +
         facet_grid(k ~ j) +
         ggtitle(paste("split at", u1))
     print(g)
 }
 
-tus <- us[, .(1), by=.(k, u)]
-une <- NULL
-for (row in 1:nrow(tus)) {
-    z <- merge(tus[row], uxys.wide, by=c("k", "u"))
-    une <- rbind(
-        une,
-        cbind(
-            tus[row, .(k, u)],
-            Tn=npdeneqtest(
-                z[s == "below split", .(y1, y2, y3)],
-                z[s == "above split", .(y1, y2, y3)],
-                boot.num=250
-            )$Tn
-        )
-    )
-}
-une %>% dim
-
-ggplot(une, aes(x=u, y=Tn, color=k)) +
-    geom_point() +
-    geom_line() +
-    xlab("split location") +
-    ylab("test statistic (standardized)")
-
 twosample_test_resample <- function(xy, n) {
-    rows <- nrow(xy)
-    result <- cbind(
-        n=0,
-        Tn=npdeneqtest(
+    capture.output(
+        xy.result <- npdeneqtest(
             xy[s == "below split", .(y1, y2, y3)],
             xy[s == "above split", .(y1, y2, y3)],
-            boot.num=250
-        )$Tn
+            boot.num=100
+        )
     )
+    result <- cbind(n=0, Tn=xy.result$Tn)
+    rows <- nrow(xy)
     for (i in 1:n) {
         xy.sample <- xy[sample(1:rows, rows, replace=TRUE)]
         xy.sample[, sequence:=1:rows]
-        xy.sample <- merge(tus[row], xy.sample, by=c("k", "u"))
-        result <- rbind(
-            result,
-            cbind(
-                n=i,
-                Tn=npdeneqtest(
-                    xy.sample[s == "below split", .(y1, y2, y3)],
-                    xy.sample[s == "above split", .(y1, y2, y3)],
-                    boot.num=250
-                )$Tn
+        capture.output(
+            xy.result <- npdeneqtest(
+                xy.sample[s == "below split", .(y1, y2, y3)],
+                xy.sample[s == "above split", .(y1, y2, y3)],
+                boot.num=100
             )
         )
+        result <- rbind(result, cbind(n=i, Tn=xy.result$Tn))
     }
     result
 }
@@ -532,14 +504,10 @@ for (row in 1:nrow(tus))
     )
 une %>% dim
 
-une %>% summary
-
-ggplot(une[n != 0], aes(x=u, y=Tn)) +
+ggplot(une[n != 0, ], aes(x=factor(u), y=Tn)) +
     geom_boxplot(outlier.shape=NA) +
-    geom_point(data=une[n == 0], aes(x=u, y=Tn)) +
+    geom_point(data=une[n == 0], aes(x=factor(u), y=Tn)) +
     facet_grid(k ~ .) +
-    guides(color=guide_legend(title="Data Subset")) +
+    guides(color=guide_legend(title="data subset")) +
     xlab("split location") +
     ylab("test statistic (standardized)")
-
-
