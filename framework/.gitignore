@@ -1,0 +1,6 @@
+__pycache__/
+*.cin
+*.cmd
+*.lst
+*.tsv
+*.vdf
