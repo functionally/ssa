@@ -10,3 +10,5 @@ tmp/
 .jupyter/
 .local/
 *.tar.gz
+.cache/
+.ipython/
