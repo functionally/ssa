@@ -106,7 +106,15 @@ class Sampler:
     def compute(self):
         needed = self.xs[self.xs.compute]
         for row in needed.itertuples():
-            y = pd.DataFrame(self.f([row.x1, row.x2, row.x3], self.ts), columns=["y1", "y2", "y3"])
+            try:
+                fx = self.f([row.x1, row.x2, row.x3], self.ts)
+            except Exception:
+                print("Exception evaluating function at " + str(row) + ".")
+                fx = []
+            y = pd.DataFrame(
+                fx if len(fx) == len(self.ts) else np.full((len(self.ts), 3), nan),
+                columns=["y1", "y2", "y3"]
+            )
             y["sequence"] = row.sequence
             y["t"       ] = self.ts
             y = y.set_index(["sequence"])[["t", "y1", "y2", "y3"]]

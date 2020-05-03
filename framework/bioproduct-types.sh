@@ -6,6 +6,6 @@ XVFB_PID=$!
 
 export DISPLAY=:9.0
 
-python bioproduct-types.py
+python bioproduct-types.py 2> bioproduct-types.log
 
 kill $XVFB_PID

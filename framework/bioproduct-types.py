@@ -39,7 +39,7 @@ def bioproducts(xs, ts):
 z = sa.Sampler(bioproducts, np.arange(2015, 2051, 2.5))
 
 while True:
-    z.cycle(5, focus = 0.25, alpha = 1)
+    z.cycle(5, focus = 0.5, alpha = 0.5)
     z.xs.assign(**{
         "bioproduct actual cost" : xrange[0, 0] * (1 - z.xs.x1) + xrange[0, 1] * z.xs.x1,
         "consumer inertia"       : xrange[1, 0] * (1 - z.xs.x2) + xrange[1, 1] * z.xs.x2,

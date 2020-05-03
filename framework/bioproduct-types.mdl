@@ -1,4 +1,9 @@
 {UTF-8}
+z=
+	DELAY FIXED(bioproduct is favorable * Potential Adopters , retrofit delay , 0)
+	~	
+	~		|
+
 trend measuring time=
 	0.5
 	~	year [0,20]
@@ -54,9 +59,11 @@ fossil product actual cost=
 	|
 
 overcoming inertia=
+	IF THEN ELSE(NonAdopters > 0,
 	NonAdopters * bioproduct marketing / consumer inertia +
 	Adopters * effective contact rate * NonAdopters / (consumer inertia * (NonAdopters +\
 		 Potential Adopters + Adopters))
+	, 0)
 	~	tons/Month/Month [0,?]
 	~	NonAdopters * bioproduct marketing / consumer inertia = captures effectiveness of \
 		advertisements and similar information, mitigated by the level of inertia \
@@ -123,8 +130,8 @@ market expanding=
 	~	arbitrary number
 	|
 
-deciding to adopt= DELAY FIXED (
-	 bioproduct is favorable * Potential Adopters , retrofit delay , 0)
+deciding to adopt=
+	IF THEN ELSE(Potential Adopters >= z * TIME STEP, z, 0)
 	~	tons/Month/Month [0,?]
 	~	the retrofit delay can be set to zero to represent a direct replacement
 	|
@@ -382,11 +389,11 @@ add memory: experience, reliability, keep track of failures/shutdowns/decreases 
 10,59,New Market Participants,499,493,50,31,3,131,0,0,0,0,0,0
 1,60,62,56,4,0,0,22,0,0,0,-1--1--1,,1|(251,431)|
 1,61,62,59,100,0,0,22,0,0,0,-1--1--1,,1|(353,493)|
-11,62,748,251,493,6,8,34,3,0,0,1,0,0,0
+11,62,764,251,493,6,8,34,3,0,0,1,0,0,0
 10,63,new nonadopters,251,512,54,11,40,3,0,0,-1,0,0,0
 1,64,66,58,4,0,0,22,0,0,0,-1--1--1,,1|(726,426)|
 1,65,66,59,100,0,0,22,0,0,0,-1--1--1,,1|(634,493)|
-11,66,700,726,493,6,8,34,3,0,0,1,0,0,0
+11,66,716,726,493,6,8,34,3,0,0,1,0,0,0
 10,67,new adopters,726,512,43,11,40,3,0,0,-1,0,0,0
 12,68,48,502,623,10,8,0,3,0,0,-1,0,0,0
 1,69,71,59,4,0,0,22,0,0,0,-1--1--1,,1|(499,544)|
@@ -395,15 +402,15 @@ add memory: experience, reliability, keep track of failures/shutdowns/decreases 
 10,72,market expanding,563,570,56,11,40,3,0,0,-1,0,0,0
 1,73,75,58,4,0,0,22,0,0,0,-1--1--1,,1|(639,340)|
 1,74,75,57,100,0,0,22,0,0,0,-1--1--1,,1|(579,340)|
-11,75,684,609,340,6,8,34,3,0,0,1,0,0,0
+11,75,700,609,340,6,8,34,3,0,0,1,0,0,0
 10,76,deciding to adopt,609,359,55,11,40,3,0,0,-1,0,0,0
 1,77,79,57,4,0,0,22,0,0,0,-1--1--1,,1|(405,342)|
 1,78,79,56,100,0,0,22,0,0,0,-1--1--1,,1|(341,342)|
-11,79,268,373,342,6,8,34,3,0,0,1,0,0,0
+11,79,364,373,342,6,8,34,3,0,0,1,0,0,0
 10,80,overcoming inertia,373,361,57,11,40,3,0,0,-1,0,0,0
 1,81,83,56,4,0,0,22,0,0,0,-1--1--1,,1|(251,231)|
 1,82,83,58,100,0,0,22,0,0,0,-1--1--1,,1|(726,231)|
-11,83,508,501,231,6,8,34,3,0,0,3,0,0,0
+11,83,524,501,231,6,8,34,3,0,0,3,0,0,0
 10,84,abandoning bioproducts,501,204,39,19,40,3,0,0,-1,0,0,0
 10,85,bioproduct effectiveness,1164,508,41,19,8,3,0,2,0,0,0,0,-1--1--1,0-0-0,|12||0-0-255
 1,86,85,12,1,0,45,0,2,128,0,-1--1--1,|12||0-0-0,1|(1241,483)|
@@ -420,9 +427,7 @@ add memory: experience, reliability, keep track of failures/shutdowns/decreases 
 1,97,31,67,1,0,0,0,0,128,0,-1--1--1,,1|(776,557)|
 10,98,fossil product is favorable,383,148,55,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
 10,99,bioproduct is favorable,567,275,47,19,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|12||128-128-128
-1,100,99,76,1,0,0,0,0,128,0,-1--1--1,,1|(604,302)|
 10,101,retrofit delay,661,281,40,11,8,3,0,2,0,0,0,0,-1--1--1,0-0-0,|12||0-0-255
-1,102,101,76,1,0,0,0,0,128,0,-1--1--1,,1|(639,316)|
 1,103,98,84,1,0,0,0,0,128,0,-1--1--1,,1|(471,156)|
 1,104,56,10,1,0,45,0,2,128,0,-1--1--1,|12||0-0-0,1|(342,419)|
 1,105,57,10,1,0,45,0,2,128,0,-1--1--1,|12||0-0-0,1|(552,392)|
@@ -446,6 +451,13 @@ add memory: experience, reliability, keep track of failures/shutdowns/decreases 
 1,123,118,84,0,0,0,0,0,64,0,-1--1--1,,1|(659,224)|
 10,124,trend measuring time,1630,813,50,19,8,3,0,0,0,0,0,0
 1,125,124,121,1,0,0,0,0,128,0,-1--1--1,,1|(1611,777)|
+10,126,z,604,410,6,11,8,3,0,0,0,0,0,0
+1,127,31,126,0,0,0,0,0,64,0,-1--1--1,,1|(679,503)|
+1,128,57,126,0,0,0,0,0,64,0,-1--1--1,,1|(564,385)|
+1,129,101,126,0,0,0,0,0,64,0,-1--1--1,,1|(635,339)|
+1,130,126,76,0,0,0,0,0,64,0,-1--1--1,,1|(605,391)|
+10,131,TIME STEP,609,389,54,11,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|0||128-128-128
+1,132,131,76,0,0,0,0,0,64,0,-1--1--1,,1|(609,381)|
 ///---\\\
 :L<%^E!@
 1:simulation.vdf
@@ -456,7 +468,7 @@ add memory: experience, reliability, keep track of failures/shutdowns/decreases 
 27:0,
 34:0,
 4:Time
-5:test variable
+5:deciding to adopt
 35:Date
 36:YYYY-MM-DD
 37:2000
@@ -466,5 +478,5 @@ add memory: experience, reliability, keep track of failures/shutdowns/decreases 
 41:0
 42:1
 24:2015
-25:2045.28
-26:2045.28
+25:2050
+26:2050
