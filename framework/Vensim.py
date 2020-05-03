@@ -71,9 +71,8 @@ class Vensim:
         if delete_lst:
           os.remove(self.lst_name)
 
-    def run_vensim(self):
+    def run_vensim(self, timeout = 60):
         with Popen(self.executable + [self.cmd_name]) as p:
-            while p.returncode is None:
-                p.poll()
+            p.wait(timeout)
             if p.returncode != 0:
                 raise Exception("Vensim failed.")   
