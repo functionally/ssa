@@ -1,4 +1,5 @@
 import numpy   as np
+import os      as os
 import pandas  as pd
 import Sampler as sa
 import Vensim  as vs
@@ -37,6 +38,25 @@ def bioproducts(xs, ts):
 
 
 z = sa.Sampler(bioproducts, np.arange(2015, 2051, 2.5))
+
+if os.path.exists("xs.tsv") and os.path.exists("ys.tsv"):
+    z.xs = pd.read_csv(
+        "xs.tsv",
+        sep = "\t",
+        index_col = ["i1", "i2", "i3"],
+        usecols = ["i1", "i2", "i3", "sequence", "generation", "x1", "x2", "x3", "compute", "measure", "probed", "s1", "s2", "s3", "s"],
+    )
+    z.ys = pd.read_csv(
+        "ys.tsv",
+        sep = "\t",
+        index_col = "sequence",
+        usecols = ["sequence", "Year", "Adopters", "NonAdopters", "Potential Adopters"]
+    ).rename(columns={
+        "Year"               : "t" ,
+        "Adopters"           : "y1",
+        "NonAdopters"        : "y2",
+        "Potential Adopters" : "y3",
+    })
 
 while True:
     z.cycle(5, focus = 0.5, alpha = 0.5)
