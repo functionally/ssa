@@ -72,6 +72,7 @@ let
         knitr
         kSamples
         lubridate
+        LaplacesDemon
         magrittr
         memo
         mlogit
