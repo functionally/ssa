@@ -49,55 +49,72 @@ let
         repr
         uuid
         # Custom packages
+        abind
         arm
         BH
         circlize
         codetools
+        crayon
         data_table
-        deSolve
         DBI
+        deSolve
+        devtools
+        digest
       # dplr
+        evaluate
+        fitdistrplus
         FNN
         GGally
-        glmulti
         ggplot2
+        glmulti
+        GSAR
         highr
         Hmisc
         httr
         igraph
         InformationValue
       # iplot
+        jsonlite
         keras
         kernlab
         knitr
         kSamples
-        lubridate
         LaplacesDemon
+        lhs
+        lubridate
         magrittr
+        MASS
         memo
         mlogit
         mnlogit
+        modes
         multinomRob
         nnet
         np
+        pbdZMQ
         plotrix
         quantmod
         quantreg
+        randtoolbox
         Rcpp
         RcppEigen
         regclass
+        repr
         reshape2
         rpart
         rTensor
+        sensitivity
         shiny
         shinyjs
         smbinning
+        SobolSequence
         SPARQL
         sqldf
         stringr
       # TDA
         tensorflow
         tidyr
+        uuid
         yaml
       ];
     };
