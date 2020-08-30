@@ -1,5 +1,5 @@
 v_{i,j}^{(\alpha)}(x) = \sum_{k=1}^N 1_{\min \left\{ x_{A,i}^{(k)} , x_{B,i}^{(k)} \right\} \leq x \leq \max \left\{ x_{A,i}^{(k)} , x_{B,i}^{(k)} \right\}} \frac{\left| y_{A,j}^{(k)} - y_{A_{B_i},j}^{(k)} \right| ^ \alpha}{\left| x_{A,i}^{(k)} - x_{B,i}^{(k)} \right|}
 
-w_{i,j}(x) = \sum_{k=1}^N 1_{\min \left\{ x_{A,i}^{(k)} , x_{B,i}^{(k)} \right\} \leq x \leq \max \left\{ x_{A,i}^{(k)} , x_{B,i}^{(k)} \right\}}
+w_{i,j}(x) = \sum_{k=1}^N 1_{\min \left\{ x_{A,i}^{(k)} , x_{B,i}^{(k)} \right\} \leq x \leq \max \left\{ x_{A,i}^{(k)} , x_{B,i}^{(k)} \right\}} \frac{1}{\left| x_{A,i}^{(k)} - x_{B,i}^{(k)} \right|}
 
-\rho_{i,j}^{(\alpha)}(x) = \frac{v_{i,j}^{(\alpha)}(x)}{w_{i,j}(x)}
+\rho_{i,j}^{(\alpha)}(x) = \frac{v_{i,j}^{(\alpha)}(x)}{w_{i,j}(x)} = \frac{v_{i,j}^{(\alpha)}(x)}{v_{i,j}^{(0)}(x)}
