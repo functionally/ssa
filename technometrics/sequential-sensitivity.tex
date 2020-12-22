@@ -18,7 +18,7 @@
 \usepackage[
 backend=biber,
 style=alphabetic,
-sorting=ynt
+sorting=nyt
 ]{biblatex}
 
 \addbibresource{sequential-sensitivity.bib}
@@ -77,7 +77,7 @@ Inspired by the well-established variance-based methods for global sensitivity a
 \end{abstract}
 
 \noindent%
-{\it Keywords:} \todo{\small 3 to 6 keywords, that do not appear in the title}
+{\it Keywords: variance-based; regional sensitivity; uncertainty} \todo{\small 3 to 6 keywords, that do not appear in the title}
 \vfill
 
 \newpage
@@ -89,6 +89,14 @@ Inspired by the well-established variance-based methods for global sensitivity a
 
 
 \section{Background}
+
+Saltelli \textit{et al.} \cite{saltelli_sensitivity_2004} \cite{saltelli_global_2008} provide thorough and practical overviews of global variance-based sensitivity analysis methods, while \cite{saltelli_variance_2010} summarizes recomendations for designing experiments for and computing first-order and total sensitivity indices. Such recommendations arise from foundational work by a variety of researchers who investigated optimal experimental design \cite{jansen_analysis_1999} \cite{saltelli_variance_2010}, alternative computational recipes \cite{saltelli_variance_2010}, and efficient organization and minimization of model evaluations \cite{saltelli_making_2002} \cite{piano_new_2019} \cite{kucherenko_estimation_2012}.
+
+Borgonovo and Plischke \cite{borgonovo_sensitivity_2016} broadly catalog the spectrum of sensitivity-analysis techniques, including not only global variance-based methods, but also local or regional non-variance methods such as Monte Carlo filtering \cite{wu_application_2017}. Domain specific reviews and assessments of sensitivity analysis are provided by Wagener and Pianosi \cite{wagener_what_2019} for earth-system modeling, Tian \cite{tian_review_2013} for building-energy analysis, Norton \cite{norton_introduction_2015} or Pianosi \textit{et al.} \cite{pianosi_sensitivity_2016} for environmental-simulation models, and Jadun \textit{et al} \cite{jadun_application_2017} or Inman \textit{et al.} \cite{inman_application_2018} for bioenergy supply-chain simulation.
+
+Local and regional specializations of sensitivity analysis are discussed in Wei \cite{wei_regional_2014}, Wu \cite{wu_application_2017}, Spear, Grieb, and Shang \cite{spear_parameter_1994}, and Rose \textit{et al.} \cite{rose_parameter_1991}. Gamboa \textit{et al.} \cite{gamboa_sensitivity_2013} generalize sensitivity indices to multivariate output. Lu, Anderson-Cook, and Ahmed \cite{lu_non-uniform_2020} propose non-uniform space-filling (NUSF) experimental designs that control the density of sampling according to experimental objectives, while Bowman and Woods \cite{bowman_weighted_2013} define weighted space-filling (WSF) ones using a distance metric for the design space.
+
+% Discuss Myers et al. \cite{myers_partitioning_2016}?
 
 
 \section{Method}
@@ -307,7 +315,7 @@ Figure~\ref{fig:btd-taubar1}
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/btd-taubar1.png}
-    \caption{Average sensitivity density $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the BTD model, for the first batch $N = M = 10$ observations (blue with dark gray) and for the full set of $N = 2500$ observations (orange). (Note that the density is smoothed using LOESS, with dark gray bands for the confidence interval of the smoothed curve.)}
+    \caption{Average sensitivity density $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the BTD model, for the first batch of $M = 10$ observations (blue with dark gray) and for the full set of $N = 2500$ observations (orange). (Note that the density is smoothed using LOESS, with dark gray bands for the confidence interval of the smoothed curve.)}
     \label{fig:btd-taubar1}
 \end{figure}
 
@@ -322,7 +330,7 @@ Figure~\ref{fig:btd-taubar1}
 This work was authored in part by the National Renewable Energy Laboratory, operated by Alliance for Sustainable Energy, LLC, for the U.S. Department of Energy (DOE) under Contract No. DE-AC36-08GO28308. Funding provided by the Department of Energy Office of Energy Efficiency and Renewable Energy Bioenergy Technologies Office. The views expressed in the article do not necessarily represent the views of the DOE or the U.S.\ Government. The U.S.\ Government retains and the publisher, by accepting the article for publication, acknowledges that the U.S.\ Government retains a nonexclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this work, or allow others to do so, for U.S. Government purposes.
 
 
-% FIXME: Remove this.
+%%%% FIXME: Comment out the following command before submitting.
 \nocite{*}
 
 
