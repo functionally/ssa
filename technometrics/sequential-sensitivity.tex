@@ -252,14 +252,14 @@ $y_3$ & 0.41 & 0.00 & 0.87 \\
 \begin{figure}
     \centering
     \includegraphics[width=1.00\linewidth]{figures/toy-tau.png}
-    \caption{Sensitivity density $\tau_{i,j}^{(2,\epsilon)}(x)$ for the toy model, with $\epsilon = 10^{-4}$ and $N = M = 1000$.}
+    \caption{Sensitivity density $\tau_{i,j}^{(2,\epsilon)}(x)$ for the toy model, with $\epsilon = 10^{-4}$ and $N = M = 1000$. (Note that the density is smoothed using a general additive model.)}
     \label{fig:toy-tau}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=1.00\linewidth]{figures/toy-taubar.png}
-    \caption{Averaged sensitivity density $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the toy model, with $\epsilon = 10^{-4}$ and $N = M = 1000$. The three dashed orange lines mark locations of the toy model's discontinuities with respect to its three independent variables: the algorithm successfully detects the zeroth- and first-order discontinuities in $x_1$ and $x_2$, respectively, but not the second-order discontinuity in $x_3$.}
+    \caption{Averaged sensitivity density $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the toy model, with $\epsilon = 10^{-4}$ and $N = M = 1000$. The three dashed orange lines mark locations of the toy model's discontinuities with respect to its three independent variables: the algorithm successfully detects the zeroth- and first-order discontinuities in $x_1$ and $x_2$, respectively, but not the second-order discontinuity in $x_3$. (Note that the density is smoothed using a general additive model.)}
     \label{fig:toy-taubar}
 \end{figure}
 
@@ -269,7 +269,7 @@ $y_3$ & 0.41 & 0.00 & 0.87 \\
     \includegraphics[width=0.300\linewidth]{figures/toy-density2.png}
     \includegraphics[width=0.300\linewidth]{figures/toy-density3.png}
     \includegraphics[width=0.075\linewidth,clip=true,trim={1.5in 0 2.15 2.15}]{figures/toy-density.png}
-    \caption{Density of sampling in the first five batches of $M = 10$ observations in adaptive sampling according to $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the toy model, with $\epsilon = 10^{-4}$, starting with a first batch that uniformly samples. The three dashed orange lines mark locations of the toy model's discontinuities with respect to its three independent variables: the algorithm successfully detects the zeroth- and first-order discontinuities in $x_1$ and $x_2$, respectively, but not the second-order discontinuity in $x_3$.}
+    \caption{Density of sampling in the first five batches of $M = 10$ observations in adaptive sampling according to $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the toy model, with $\epsilon = 10^{-4}$, starting with a first batch that uniformly samples. The three dashed orange lines mark locations of the toy model's discontinuities with respect to its three independent variables: the algorithm successfully detects the zeroth- and first-order discontinuities in $x_1$ and $x_2$, respectively, but not the second-order discontinuity in $x_3$. (Note that the density is smoothed using a general additive model.)}
     \label{fig:toy-density}
 \end{figure}
 
@@ -288,27 +288,27 @@ $y_3$ & 0.41 & 0.00 & 0.87 \\
 
 Figure~\ref{fig:btd-t}
 Figure~\ref{fig:btd-tau}
-Figure~\ref{fig:btd-taubar}
+Figure~\ref{fig:btd-taubar1}
 
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/btd-t.png}
-    \caption{Cumulative local sensitivity $T_{i,j}^{(2,\epsilon)}(x)$ for the BTD model, with $j =$ ``demo plant construction'' and $N = M = 2500$.}
+    \caption{Cumulative local sensitivity $T_{i,j}^{(2,\epsilon)}(x)$ for the BTD model, with $j =$ ``demo plant construction'' and $N = M = 2500$. The black curve is the computed sensitivity, the 25 blue curves are sensitivities obtained by resampling the observations, and the orange curve is the fit from a general additive model for the blue curves.}
     \label{fig:btd-t}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/btd-tau.png}
-    \caption{Sensitivity density $\tau_{i,j}^{(2,\epsilon)}(x)$ for the BTD model, with $j =$ ``demo plant construction'' and $N = M = 2500$.}
+    \caption{Sensitivity density $\tau_{i,j}^{(2,\epsilon)}(x)$ for the BTD model, with $j =$ ``demo plant construction'' and $N = M = 2500$. (Note that the density is smoothed using LOESS, with dark gray bands for the confidence interval of the smoothed curve.)}
     \label{fig:btd-tau}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[width=\linewidth]{figures/btd-taubar.png}
-    \caption{Average sensitivity density $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the BTD model.}
-    \label{fig:btd-taubar}
+    \includegraphics[width=\linewidth]{figures/btd-taubar1.png}
+    \caption{Average sensitivity density $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the BTD model, for the first batch $N = M = 10$ observations (blue with dark gray) and for the full set of $N = 2500$ observations (orange). (Note that the density is smoothed using LOESS, with dark gray bands for the confidence interval of the smoothed curve.)}
+    \label{fig:btd-taubar1}
 \end{figure}
 
 
@@ -320,6 +320,10 @@ Figure~\ref{fig:btd-taubar}
 \section*{Acknowledgements}
 
 This work was authored in part by the National Renewable Energy Laboratory, operated by Alliance for Sustainable Energy, LLC, for the U.S. Department of Energy (DOE) under Contract No. DE-AC36-08GO28308. Funding provided by the Department of Energy Office of Energy Efficiency and Renewable Energy Bioenergy Technologies Office. The views expressed in the article do not necessarily represent the views of the DOE or the U.S.\ Government. The U.S.\ Government retains and the publisher, by accepting the article for publication, acknowledges that the U.S.\ Government retains a nonexclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this work, or allow others to do so, for U.S. Government purposes.
+
+
+% FIXME: Remove this.
+\nocite{*}
 
 
 \printbibliography
