@@ -48,7 +48,7 @@ sorting=nyt
 
 \if0\blind
 {
-  \title{\bf Adaptively Iterating Variance-Based Sensitivity Analysis}
+  \title{\bf Adaptively Sampling Using Regional Sensitivities}
   \author{
     Brian\ W.\ Bush \\
     National Renewable Energy Laboratory, \\ \\
@@ -66,7 +66,7 @@ sorting=nyt
   \bigskip
   \bigskip
   \begin{center}
-    {\LARGE\bf Adaptively Iterating Variance-Based Sensitivity Analysis}
+    {\LARGE\bf Adaptively Sampling Using Regional Sensitivities}
 \end{center}
   \medskip
 } \fi
@@ -77,7 +77,7 @@ Inspired by the well-established variance-based methods for global sensitivity a
 \end{abstract}
 
 \noindent%
-{\it Keywords: variance-based; regional sensitivity; uncertainty} \todo{\small 3 to 6 keywords, that do not appear in the title}
+{\it Keywords: adaptive sampling; variance-based; regional; local; sensitivity; uncertainty} \todo{\small 3 to 6 keywords, that do not appear in the title}
 \vfill
 
 \newpage
@@ -87,10 +87,16 @@ Inspired by the well-established variance-based methods for global sensitivity a
 
 \section{Introduction}
 
+Computer experiments employing complex simulations, which typically involve dozens or hundreds of independent and dependent variables, pose daunting analytic challenges for developing defensible and robust insights about sensitivity, uncertainty, and system behavior. The high dimensionality of the input spaces necessitates economical exploration of input-parameter ranges and the similarly large output dimensions, often in the form of multivariate timeseries, stresses visual and statistical analyses. Well-established techniques for global sensitivity analysis, such as elementary-effects screening and variance-based first-order and total sensitivity indices \cite{saltelli_global_2008}, provide a solid foundation for exploring and characterizing these complex simulations, while local or regional methods such as Monte-Carlo filtering \cite{borgonovo_sensitivity_2016} allow targeted discrimination of sensitivities, but neither approach maps the landscape of contributions to sensitive dependence of outputs upon inputs. Understanding that landscape of sensitivity, however, may motivate deeper exploration and an iterative sequence of computer experiments to tease out significant details of the nonlinear responses in a simulation.
+
+Indeed, a not uncommon practice in computer experimentation on complex models or simulations relies on an initial screening of sensitivities over a generously large set of variables, typically chosen according to the judgment of model developers and domain experts:\ the result of the broad, but computationally efficient, screening identifies a set of candidate input parameters for which a more rigorous and expensive global sensitivity analysis is warranted. Initial screening may use one-at-a-time variation of input parameters, while the subsequent global analysis typically relies on a uniformly-sampling space-filling design (e.g., fractional factorial, Latin hypercube, orthogonal array, or quasi-random sequence).\todo{\small Do we need to cite all of the bread-and-butter techniques mentioned in this paragraph?} Based on the results of the global sensitivity analysis and resources permitting, an analyst may execute subsequent sensitivity analyses that (1) narrow or broaden the range of variation in the independent variables, (2) add or remove candidate inputs from the set varied in the experiments, (3) add or remove output variables for evaluating sensitivities, or (4) increase sample size. Sample size is a particularly important issue because of the inverse relationship between number of input parameters varied in a sensitivity analysis and the tightness of the confidence intervals in the sensitivity indices (especially for total sensitivities or for higher than first-order sensitivities). Thus, subsequent iterations of a global sensitivity analysis may reduce the number of inputs considered, in order to tighten confidence intervals for the inconclusive results of previous iterations, and increase sample size. Early iterations might also correct overly broad or narrow ranges of input variation or discard outputs that do not exhibit interesting variation, as when a modeler or analyst belatedly realizes that an output variable exhibits a trivial dependence on input or trivially inconsequential variation. Furthermore, exploratory analysis and visualization of the raw simulation output, conditioned on the inputs, may reveal interesting patterns and dependencies---not apparent in the global sensitivity indices---of the output upon local regions of the input space:\ this may lead to focused ``side analyses'' that probe local regions or test specific hypotheses. If computational resources were unlimited, then none of this tedious and labor-intensive iteration would be necessary.
+
+Our work here is motivated by the desire to automate much of the practical and predictably iterative process of model exploration and sensitivity analysis described in the previous paragraph, thus freeing the modeler and analyst to work at a higher level of abstraction in developing insights and testing hypotheses. In particular, we would like to semi-autonomously focus computational resources on the most potentially interesting regions of the input space using estimates of how much those regions contribute to global sensitivity indices. We envision a computational workflow where (1) an initial uniformly space-filling experimental design adaptively evolves to focus on regions of higher variance while not ignoring the lower-variance regions, (2) previously computed simulations are seamlessly incorporated into the adaptiving design, (3) users may at any point tune the intensity of focus on the higher-variance regions, and (4) users have the option to intervene to adjust the boundaries of the input space or the density of sampling. To this end, in this paper we develop a local decomposition of global variance-based sensitivity indices, formulated in a manner that enables iterative updating of the non-uniform space-filling sampling of the simulation output so that it focuses on higher-variance regions. Additionally, the sampling method is amenable to user interventions to tailor sampling to their interest.
+
 
 \section{Background}
 
-Saltelli \textit{et al.} \cite{saltelli_sensitivity_2004} \cite{saltelli_global_2008} provide thorough and practical overviews of global variance-based sensitivity analysis methods, while \cite{saltelli_variance_2010} summarizes recomendations for designing experiments for and computing first-order and total sensitivity indices. Such recommendations arise from foundational work by a variety of researchers who investigated optimal experimental design \cite{jansen_analysis_1999} \cite{saltelli_variance_2010}, alternative computational recipes \cite{saltelli_variance_2010}, and efficient organization and minimization of model evaluations \cite{saltelli_making_2002} \cite{piano_new_2019} \cite{kucherenko_estimation_2012}.
+Saltelli \textit{et al.} \cite{saltelli_sensitivity_2004} \cite{saltelli_global_2008} provide a thorough and practical overviews of global variance-based sensitivity analysis methods, while \cite{saltelli_variance_2010} summarizes recomendations for designing experiments for and computing first-order and total sensitivity indices. Such recommendations arise from foundational work by a variety of researchers who investigated optimal experimental design \cite{jansen_analysis_1999} \cite{saltelli_variance_2010}, alternative computational recipes \cite{saltelli_variance_2010}, and efficient organization and minimization of model evaluations \cite{saltelli_making_2002} \cite{piano_new_2019} \cite{kucherenko_estimation_2012}.
 
 Borgonovo and Plischke \cite{borgonovo_sensitivity_2016} broadly catalog the spectrum of sensitivity-analysis techniques, including not only global variance-based methods, but also local or regional non-variance methods such as Monte Carlo filtering \cite{wu_application_2017}. Domain specific reviews and assessments of sensitivity analysis are provided by Wagener and Pianosi \cite{wagener_what_2019} for earth-system modeling, Tian \cite{tian_review_2013} for building-energy analysis, Norton \cite{norton_introduction_2015} or Pianosi \textit{et al.} \cite{pianosi_sensitivity_2016} for environmental-simulation models, and Jadun \textit{et al} \cite{jadun_application_2017} or Inman \textit{et al.} \cite{inman_application_2018} for bioenergy supply-chain simulation.
 
