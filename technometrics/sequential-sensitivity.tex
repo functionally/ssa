@@ -2,7 +2,6 @@
 %\usepackage{amsmath}
 \usepackage{graphicx}
 %\usepackage{enumerate}
-%\usepackage{natbib} %comment out if you do not have the package
 \usepackage{url} % not crucial - just used below for the URL 
 
 \usepackage[utf8]{inputenc}
@@ -13,15 +12,20 @@
 \usepackage{bbm}
 \usepackage{csquotes}
 \usepackage{relsize}
-\usepackage{todonotes}
+%\usepackage{todonotes}
 
-\usepackage[
-backend=biber,
-style=alphabetic,
-sorting=nyt
-]{biblatex}
+\usepackage{natbib} %comment out if you do not have the package
 
-\addbibresource{sequential-sensitivity.bib}
+\allowdisplaybreaks
+
+
+%%%%\usepackage[
+%%%%backend=biber,
+%%%%style=alphabetic,
+%%%%sorting=nyt
+%%%%]{biblatex}
+%%%%
+%%%%\addbibresource{sequential-sensitivity.bib}
 
 
 %\pdfminorversion=4
@@ -38,7 +42,7 @@ sorting=nyt
 
 \begin{document}
 
-%\bibliographystyle{natbib}
+%\bibliographystyle{JASA}
 
 \def\spacingset#1{\renewcommand{\baselinestretch}%
 {#1}\small\normalsize} \spacingset{1}
@@ -71,38 +75,47 @@ sorting=nyt
   \medskip
 } \fi
 
+
+%%%% FIXME: Remove comment before submitting.
+\spacingset{2} % DON'T change the spacing!
+
+
 \bigskip
 \begin{abstract}
-Inspired by the well-established variance-based methods for global sensitivity analysis, we develop a local total sensitivity index that decomposes the global total sensitivity conditions by independent variables. We employ this local sensitivity index in a new method of experimental design that sequentially and adaptively samples the domain of a multivariate function according to local contributions to the global variance. The method is demonstrated on a nonlinear toy model that has a three-dimensional domain and a three-dimensional codomain, but also on a complex, high-dimensional simulation of the production of bioproducts from biomass. \todo{\small 100 or fewer words.}
+Inspired by the well-established variance-based methods for global sensitivity analysis, we develop a local total sensitivity index that decomposes the global total sensitivity conditions by independent variables' values. We employ this local sensitivity index in a new method of experimental design that sequentially and adaptively samples the domain of a multivariate function according to local contributions to the global variance. The method is demonstrated on a nonlinear illustrative example that has a three-dimensional domain and a three-dimensional codomain, but also on a complex, high-dimensional simulation for assessing the industrial viability of the production of bioproducts from biomass.
+%\todo{\small 100 or fewer words.}
 \end{abstract}
 
 \noindent%
-{\it Keywords: adaptive sampling; variance-based; regional; local; sensitivity; uncertainty} \todo{\small 3 to 6 keywords, that do not appear in the title}
+{\it Keywords: Computer Experiments; Experimental Design; Multivariate Analysis; Sampling.}
+%\todo{\small 3 to 6 keywords, that do not appear in the title}
 \vfill
 
 \newpage
-%%%% FIXME: Remove comment before submitting.
-%%%%\spacingset{2} % DON'T change the spacing!
 
 
 \section{Introduction}
 \label{sec:intro}
 
-Computer experiments employing complex simulations, which typically involve dozens or hundreds of independent and dependent variables, pose daunting analytic challenges for developing defensible and robust insights about sensitivity, uncertainty, and system behavior. The high dimensionality of the input spaces necessitates economical exploration of input-parameter ranges and the similarly large output dimensions, often in the form of multivariate timeseries, stresses visual and statistical analyses. Well-established techniques for global sensitivity analysis, such as elementary-effects screening and variance-based first-order and total sensitivity indices \cite{saltelli_global_2008}, provide a solid foundation for exploring and characterizing these complex simulations, while local or regional methods such as Monte-Carlo filtering \cite{borgonovo_sensitivity_2016} allow targeted discrimination of sensitivities, but neither approach maps the landscape of contributions to sensitive dependence of outputs upon inputs. Understanding that landscape of sensitivity, however, may motivate deeper exploration and an iterative sequence of computer experiments to tease out significant details of the nonlinear responses in a simulation.
+Industrially relevant computer experiments employing complex simulations, which typically involve dozens or hundreds of independent and dependent variables, pose daunting analytic challenges for developing defensible and robust insights about sensitivity, uncertainty, and system behavior. The high dimensionality of the input spaces necessitates economical exploration of input-parameter ranges and the similarly large output dimensions, often in the form of multivariate time series, stress visual and statistical analyses. Well-established techniques for global sensitivity analysis, such as elementary-effects screening and variance-based first-order and total sensitivity indices \citep{saltelli_global_2008}, provide a solid foundation for exploring and characterizing these complex simulations, while local or regional methods such as Monte-Carlo filtering \citep{borgonovo_sensitivity_2016} allow targeted discrimination of sensitivities, but neither approach maps the landscape of contributions to sensitive dependence of output variabilities upon input values. Understanding that landscape of sensitivity, however, may motivate deeper exploration and an iterative sequence of computer experiments to tease out significant details of the nonlinear responses in a simulation.
 
-Indeed, a not uncommon practice in computer experimentation on complex models or simulations relies on an initial screening of sensitivities over a generously large set of variables, typically chosen according to the judgment of model developers and domain experts:\ the result of the broad, but computationally efficient, screening identifies a set of candidate input parameters for which a more rigorous and expensive global sensitivity analysis is warranted. Initial screening may use one-at-a-time variation of input parameters, while the subsequent global analysis typically relies on a uniformly-sampling space-filling design (e.g., fractional factorial, Latin hypercube, orthogonal array, or quasi-random sequence).\todo{\small Do we need to cite all of the bread-and-butter techniques mentioned in this paragraph?} Based on the results of the global sensitivity analysis and resources permitting, an analyst may execute subsequent sensitivity analyses that (1) narrow or broaden the range of variation in the independent variables, (2) add or remove candidate inputs from the set varied in the experiments, (3) add or remove output variables for evaluating sensitivities, or (4) increase sample size. Sample size is a particularly important issue because of the inverse relationship between number of input parameters varied in a sensitivity analysis and the tightness of the confidence intervals in the sensitivity indices (especially for total sensitivities or for higher than first-order sensitivities). Thus, subsequent iterations of a global sensitivity analysis may reduce the number of inputs considered, in order to tighten confidence intervals for the inconclusive results of previous iterations, and increase sample size. Early iterations might also correct overly broad or narrow ranges of input variation or discard outputs that do not exhibit interesting variation, as when a modeler or analyst belatedly realizes that an output variable exhibits a trivial dependence on input or trivially inconsequential variation. Furthermore, exploratory analysis and visualization of the raw simulation output, conditioned on the inputs, may reveal interesting patterns and dependencies---not apparent in the global sensitivity indices---of the output upon local regions of the input space:\ this may lead to focused ``side analyses'' that probe local regions or test specific hypotheses. If computational resources were unlimited, then none of this tedious and labor-intensive iteration would be necessary.
+Indeed, a not uncommon practice in computer experimentation on complex models or simulations relies on an initial screening of sensitivities over a generously large set of variables, typically chosen according to the judgment of model developers and domain experts:\ the result of the broad, but computationally efficient, screening identifies a set of candidate input parameters for which a more rigorous and expensive global sensitivity analysis is warranted. Initial screening may use one-at-a-time variation of input parameters, while the subsequent global analysis typically relies on a uniformly-sampling space-filling design (e.g., fractional factorial, Latin hypercube, orthogonal array, quasi-random sequence, or a hybrid of these).
+%\todo{\small Do we need to cite all of the bread-and-butter techniques mentioned in this paragraph?}
+Based on the results of the global sensitivity analysis and resources permitting, an analyst may execute subsequent sensitivity analyses that (1) narrow or broaden the range of variation in the independent variables, (2) add or remove candidate inputs from the set varied in the experiments, (3) add or remove output variables for evaluating sensitivities, or (4) increase sample size. Sample size is a particularly important issue because of the inverse relationship between number of input parameters varied in a sensitivity analysis and the tightness of the confidence intervals in the sensitivity indices (especially for total sensitivities or for higher than first-order sensitivities). Thus, subsequent iterations of a global sensitivity analysis may reduce the number of inputs considered, in order to tighten confidence intervals for the inconclusive results of previous iterations, and increase sample size. Early iterations might also correct overly broad or narrow ranges of input variation or discard outputs that do not exhibit interesting variation, as when a modeler or analyst belatedly realizes that an output variable exhibits a trivial dependence on one or more inputs or trivially inconsequential variation. Furthermore, exploratory analysis and visualization of the raw simulation output, conditioned on the inputs, may reveal interesting patterns and dependencies---not apparent in the global sensitivity indices---of the output upon local regions of the input space:\ this may lead to focused ``side analyses'' that probe local regions or test specific hypotheses. If computational resources were unlimited, then none of this tedious and labor-intensive iteration would be necessary.
 
-Our work here is motivated by the desire to automate much of the practical and predictably iterative process of model exploration and sensitivity analysis described in the previous paragraph, thus freeing the modeler and analyst to work at a higher level of abstraction in developing insights and testing hypotheses. In particular, we would like to semi-autonomously focus computational resources on the most potentially interesting regions of the input space using estimates of how much those regions contribute to global sensitivity indices. We envision a computational workflow where (1) an initial uniformly space-filling experimental design adaptively evolves to focus on regions of higher variance while not ignoring the lower-variance regions, (2) previously computed simulations are seamlessly incorporated into the adaptiving design, (3) users may at any point tune the intensity of focus on the higher-variance regions, and (4) users have the option to intervene to adjust the boundaries of the input space or the density of sampling. To this end, in this paper we develop a local decomposition of global variance-based sensitivity indices, formulated in a manner that enables iterative updating of the non-uniform space-filling sampling of the simulation output so that it focuses on higher-variance regions. Additionally, the sampling method is amenable to user interventions to tailor sampling to their interest.
+Our work here is motivated by the desire to automate much of the practical and predictably iterative process of model exploration and sensitivity analysis described in the previous paragraph, thus freeing the modeler and analyst to work at a higher level of abstraction in developing insights and testing hypotheses. In particular, we would like to semi-autonomously focus computational resources on the most potentially interesting regions of the input space using estimates of how much those regions contribute to global sensitivity indices. We envision a computational workflow where (1) an initial uniformly space-filling experimental design adaptively evolves to focus on regions of higher variance while not altogether ignoring the lower-variance regions, (2) previously computed simulations are seamlessly incorporated into the adaptive design, (3) users may at any point tune the intensity of focus on the higher-variance regions, and (4) users have the option to intervene to adjust the boundaries of the input space or the density of sampling.
+%\todo{Should we add a workflow diagram illustrating this?}
+To this end, in this paper we develop a local decomposition of global variance-based sensitivity indices, formulated in a manner that enables iterative updating of the non-uniform space-filling sampling of the simulation output so that it focuses on higher-variance regions. Additionally, the sampling method is amenable to user interventions to tailor sampling to their evolving interests.
 
 
 \section{Background}
 \label{sec:back}
 
-Saltelli \textit{et al.} \cite{saltelli_sensitivity_2004} \cite{saltelli_global_2008} provide a thorough and practical overviews of global variance-based sensitivity analysis methods, while \cite{saltelli_variance_2010} summarizes recomendations for designing experiments for and computing first-order and total sensitivity indices. Such recommendations arise from foundational work by a variety of researchers who investigated optimal experimental design \cite{jansen_analysis_1999} \cite{saltelli_variance_2010}, alternative computational recipes \cite{saltelli_variance_2010}, and efficient organization and minimization of model evaluations \cite{saltelli_making_2002} \cite{piano_new_2019} \cite{kucherenko_estimation_2012}.
+Saltelli et al.\  (\citeyear{saltelli_sensitivity_2004,saltelli_global_2008}) provide thorough and practical overviews of global variance-based sensitivity analysis methods, while their later work \citep{saltelli_variance_2010} summarizes recommendations for designing experiments for and computing first-order and total sensitivity indices. Such recommendations arise from foundational work by a variety of researchers who investigated optimal experimental design \citep{jansen_analysis_1999,saltelli_variance_2010}, alternative computational recipes \citep{saltelli_variance_2010}, and efficient organization and minimization of model evaluations \citep{saltelli_making_2002,piano_new_2019,kucherenko_estimation_2012}.
 
-Borgonovo and Plischke \cite{borgonovo_sensitivity_2016} broadly catalog the spectrum of sensitivity-analysis techniques, including not only global variance-based methods, but also local or regional non-variance methods such as Monte Carlo filtering \cite{wu_application_2017}. Domain specific reviews and assessments of sensitivity analysis are provided by Wagener and Pianosi \cite{wagener_what_2019} for earth-system modeling, Tian \cite{tian_review_2013} for building-energy analysis, Norton \cite{norton_introduction_2015} or Pianosi \textit{et al.} \cite{pianosi_sensitivity_2016} for environmental-simulation models, and Jadun \textit{et al} \cite{jadun_application_2017} or Inman \textit{et al.} \cite{inman_application_2018} for bioenergy supply-chain simulation.
+Borgonovo and Plischke \citet{borgonovo_sensitivity_2016} broadly catalog the spectrum of sensitivity-analysis techniques, including not only global variance-based methods, but also local or regional non-variance methods such as Monte Carlo filtering \citep{wu_application_2017}. Domain-specific reviews and assessments of sensitivity analysis are provided by \citet{wagener_what_2019} for earth-system modeling, \citet{tian_review_2013} for building-energy analysis, \citet{norton_introduction_2015} or \citet{pianosi_sensitivity_2016} for environmental-simulation models, and \citet{jadun_application_2017} or \citet{inman_application_2018} for bioenergy supply-chain simulation.
 
-Local and regional specializations of sensitivity analysis are discussed in Wei \cite{wei_regional_2014}, Wu \cite{wu_application_2017}, Spear, Grieb, and Shang \cite{spear_parameter_1994}, and Rose \textit{et al.} \cite{rose_parameter_1991}. Gamboa \textit{et al.} \cite{gamboa_sensitivity_2013} generalize sensitivity indices to multivariate output. Lu, Anderson-Cook, and Ahmed \cite{lu_non-uniform_2020} propose non-uniform space-filling (NUSF) experimental designs that control the density of sampling according to experimental objectives, while Bowman and Woods \cite{bowman_weighted_2013} define weighted space-filling (WSF) ones using a distance metric for the design space.
+Local and regional specializations of sensitivity analysis are discussed in \citet{wei_regional_2014}, \citet{wu_application_2017}, \citet{spear_parameter_1994}, and \citet{rose_parameter_1991}. \citet{gamboa_sensitivity_2013} generalize sensitivity indices to multivariate output. \citet{lu_non-uniform_2020} propose non-uniform space-filling (NUSF) experimental designs that control the density of sampling according to experimental objectives, while \citet{bowman_weighted_2013} define weighted space-filling (WSF) ones using a distance metric for the design space.
 
 % Discuss Myers et al. \cite{myers_partitioning_2016}?
 
@@ -110,9 +123,9 @@ Local and regional specializations of sensitivity analysis are discussed in Wei 
 \section{Method}
 \label{sec:meth}
 
-We consider multivariate functions $\mathbf{Y} \left( \mathbf{X} \right)$ with $m$ independent variables $X_i$ and $n$ dependent variables $Y_j$. (Table~\ref{tab:notation} summarizes the notation used in this paper.) These functions may represent the input-output relationship of computer models (either deterministic or stochastic) or physical experiments.
+We consider multivariate functions $\mathbf{Y} \left( \mathbf{X} \right)$ with $m$ independent variables $X_i$ and $n$ dependent variables $Y_j$. (Table~\ref{tab:notation} summarizes the notation used in this paper.) These functions may represent the input-output relationship of computer models or simulations (either deterministic or stochastic) or physical experiments.
 
-We approach the problem of developing local versions of variable-based global sensitivity indices by expressing the standard global indices \cite{saltelli_variance_2010} in forms amenable to local decomposition. The local total sensitivity separately partitions the global sensitivity along each independent variable. We then adopt experimental designs that are suitable for iterative extension. The iterative experimental design samples the space of independent variables proportionally to the local variance indices observed so far in the experiment.
+We approach the problem of developing local versions of variance-based global sensitivity indices by expressing the standard global indices \citep{saltelli_variance_2010} in forms amenable to local decomposition. A local total sensitivity separately partitions the global total sensitivity along each independent variable. We then adopt experimental designs that are suitable for iterative extension. The iterative experimental design samples the space of independent variables proportionally to the local variance indices observed so far in the experiment.
 
 \begin{table}
     \centering
@@ -134,7 +147,7 @@ We approach the problem of developing local versions of variable-based global se
         $\mathbbm{1}_c$ & indicator function: $1$ if the condition $c$ holds, \\ & but $0$ otherwise \\
         $u \mathrel{\hat=} v$ & $v$ is an estimate for $u$ \\
     \end{tabular}
-    \caption{Notation used in this paper, inspired by and generally consistent with \cite{saltelli_variance_2010}.}
+    \caption{Notation used in this paper, inspired by and generally consistent with \citet{saltelli_variance_2010}.}
     \label{tab:notation}
 \end{table}
 
@@ -142,17 +155,17 @@ We approach the problem of developing local versions of variable-based global se
 \subsection{Global Sensitivity}
 \label{sec:glob}
 
-We start from standard definitions \cite{saltelli_variance_2010} that use conditional expectations and variances to express the first-order and total sensitivity indices, respectively:
+We start from standard definitions \citep{saltelli_variance_2010} that use conditional expectations and variances to express the first-order and total sensitivity indices, respectively:
 \begin{align}
     S_{i,j} & = \frac{\mathbb{V}_{X_i} \left[ \mathbb{E}_{\mathbf{X}_{\sim i}} \left[ Y_j \middle| X_i \right] \right]}{\mathbb{V}_\mathbf{X} \left[ Y_j \right]} \label{eq:satellis}
     \\
     T_{i,j} & = \frac{\mathbb{E}_{\mathbf{X}_{\sim i}} \left[ \mathbb{V}_{X_i} \left[ Y_j \middle| \mathbf{X}_{\sim i} \right] \right]}{\mathbb{V}_\mathbf{X} \left[ Y_j \right]} \label{eq:saltellit}
 \end{align}
-The first-order index $S_{i,j}$ quantifies the influence of $X_i$ solely upon the variance of $Y_j$ whereas the total index $T_{i,j}$ quantifies the influence of $X_i$ in combination with other independent variables upon the variance of $Y_j$. The two indices arise from decomposing the variance $Y_j$ and obey a variety of summation relationships and bounds---see Ref.~\cite{saltelli_sensitivity_2004} for detailed discussion.
+Loosely speaking, the first-order index $S_{i,j}$ quantifies the influence of $X_i$ solely upon the variance of $Y_j$ whereas the total index $T_{i,j}$ quantifies the influence of $X_i$ in combination with other independent variables upon the variance of $Y_j$. These two indices arise from decomposing the variance $Y_j$ and they obey a variety of summation relationships and bounds---see \citet{saltelli_sensitivity_2004} for detailed discussion.
 
-Practically estimating Eqs.~(\ref{eq:satellis}) and~(\ref{eq:saltellit}) may be problematic because of computational complexity, finite sample size, and numerical issues. Careful design of experiments alleviates some of these difficulties. An efficient design employs two $N \times k$ design matrices, $\mathbf{A}$ and $\mathbf{B}$, that are hybridized into matrices $\mathbf{A}_{\mathbf{B}_i}$ that are constructed by replacing the $i$th column of $\mathbf{A}$ with the $i$th column of $\mathbf{B}$. The number of rows $N$ determines the size of the experiment, which requires evaluating $\mathbf{Y}\left(\mathbf{X}\right)$ for each row of $\mathbf{A}$, $\mathbf{B}$, and $\mathbf{A}_{\mathbf{B}_i}$: thus $N (k + 2)$ observations must be made. The column-swapping construction facilitates efficient evaluation of the conditional expectations and variances by controlling which independent variables are varied and by organizing the computation.
+Practically estimating Eqs.~(\ref{eq:satellis}) and~(\ref{eq:saltellit}) may be problematic because of computational complexity, finite sample size, and numerical issues. Careful design of experiments alleviates some of these difficulties. An efficient design employs two $N \times k$ design matrices, $\mathbf{A}$ and $\mathbf{B}$, that are hybridized into matrices $\mathbf{A}_{\mathbf{B}_i}$ that are constructed by replacing the $i$th column of $\mathbf{A}$ with the $i$th column of $\mathbf{B}$. The number of rows $N$ determines the size of the experiment, which requires evaluating $\mathbf{Y}\left(\mathbf{X}\right)$ for each row of $\mathbf{A}$, $\mathbf{B}$, and $\mathbf{A}_{\mathbf{B}_i}$: thus $N (k + 2)$ observations must be made. This column-swapping construction facilitates efficient evaluation of the conditional expectations and variances by controlling which independent variables are varied and by organizing the computation.
 
-The best-practice recommendations of Saltelli~\cite{saltelli_variance_2010} are to use the formulae in Jansen~\cite{jansen_analysis_1999} when computing the variances of conditional expectations and the expectations of conditional variances:
+The best-practice recommendations of \citet{saltelli_variance_2010} are to use the formulae in \citet{jansen_analysis_1999} when computing the variances of conditional expectations and the expectations of conditional variances:
 \begin{align}
     \mathbb{V}_\mathbf{X} \left[ Y_j \right] - \mathbb{V}_{X_i} \left[ \mathbb{E}_{\mathbf{X}_{\sim i}} \left[ Y_j \middle| X_i \right] \right] & \mathrel{\hat=} \frac{1}{2 N} \sum_{k=1}^N \left| y_{\mathbf{B},j}^{(k)} - y_{\mathbf{A}_{\mathbf{B}_i},j}^{(k)} \right|^2 \label{eq:jansens}
     \\
@@ -163,7 +176,7 @@ Here the $y_{\mathbf{A},j}^{(k)}$, $y_{\mathbf{B},j}^{(k)}$, and $y_{\mathbf{A}_
     \mathbb{V}_\mathbf{X} \left[ Y_j \right] \mathrel{\hat=} \frac{1}{2 N} \sum_{k=1}^N \left| y_{\mathbf{A},j}^{(k)} - y_{\mathbf{B},j}^{(k)} \right|^2 \label{eq:jansenv}
 \end{equation}
 
-Combining Eqs.~(\ref{eq:jansens}) through (\ref{eq:jansenv}), we adopt the following estimators for first-order and total global sensitivities and variance:
+Combining Eqs.~(\ref{eq:jansens}) through (\ref{eq:jansenv}), we adopt the following estimators for the first-order and total global sensitivities and the variance:
 \begin{align}
     \hat{S}_{i,j} = 1 - & \frac{\sum_{k=1}^N \left| y_{\mathbf{B},j}^{(k)} - y_{\mathbf{A}_{\mathbf{B}_i},j}^{(k)} \right|^2}{\sum_{k=1}^N \left| y_{\mathbf{A},j}^{(k)} - y_{\mathbf{B},j}^{(k)} \right|^2} \label{eq:ours}
     \\
@@ -176,7 +189,7 @@ Combining Eqs.~(\ref{eq:jansens}) through (\ref{eq:jansenv}), we adopt the follo
 \subsection{Experimental Design}
 \label{sec:design}
 
-Although any of a number of design methods could be used for creating the $\mathbf{A}$ and $\mathbf{B}$ matrices, quasi-random sequences are well suited for computing the sensitivity indices and Ref.~\cite{saltelli_variance_2010} recommends using Sobol' sequences because of their low discrepancy properties. In this procedure, the $\mathbf{A}$ and $\mathbf{B}$ matrices are placed side-by-side to form an $N \times 2 k$ matrix where the $N$ rows are consecutive points in the $2 k$-dimensional Sobol' sequence. An experiment can very simply be enlarged just by appending additional rows of the Sobol' sequence, so this design procedure is well suited for iteratively extending a sensitivity analysis.
+Although any of a number of design methods could be used for creating the $\mathbf{A}$ and $\mathbf{B}$ matrices, quasi-random sequences are well suited for computing the sensitivity indices and \citet{saltelli_variance_2010} recommends using Sobol' sequences because of their low discrepancy properties. In this procedure, the $\mathbf{A}$ and $\mathbf{B}$ matrices are placed side-by-side to form an $N \times 2 k$ matrix where the $N$ rows are consecutive points in the $2 k$-dimensional Sobol' sequence. An experiment can very simply be enlarged just by appending additional rows of the Sobol' sequence, so this design procedure is well suited for iteratively extending a sensitivity analysis.
 
 Without loss of generality, we require that the domain of each independent variable be $[0, 1]$. This is convenient because the range of the Sobol' sequence is also $[0, 1]$ in each dimension.
 
@@ -184,7 +197,9 @@ Without loss of generality, we require that the domain of each independent varia
 \subsection{Local Sensitivity}
 \label{sec:local}
 
-In developing a local version of variance-based sensitivity, one would like to attribute the variance in output to a specific value or interval of the independent variables. Equation~(\ref{eq:ourt}), for example, involves evaluating $Y_j$ at the points $x_{\mathbf{A}_i}^{(k)}$ and $x_{\mathbf{B}_i}^{(k)}$ to compute the contribution $\left| y_{\mathbf{A},j}^{(k)} - y_{\mathbf{A}_{\mathbf{B}_i},j}^{(k)} \right| ^2$ to the global total sensitivity. For lack of a more specific way to assign this contribution to a particular value of the independent variable, we can simply spread this contribution uniformly between $x_{\mathbf{A}_i}^{(k)}$ and $x_{\mathbf{B}_i}^{(k)}$. Thus we define $t_{i,j}^{(\alpha,\epsilon)}(x_i)$ to be the local sensitivity of the output $y_j$ upon the input $x_i$:
+In developing a local version of variance-based sensitivity, one would like to attribute the variance in output to a specific value or interval of the independent variables. Equation~(\ref{eq:ourt}), for example, involves evaluating $Y_j$ at the points $x_{\mathbf{A}_i}^{(k)}$ and $x_{\mathbf{B}_i}^{(k)}$ to compute the contribution $\left| y_{\mathbf{A},j}^{(k)} - y_{\mathbf{A}_{\mathbf{B}_i},j}^{(k)} \right| ^2$ to the global total sensitivity. For lack of a more specific way to assign this contribution to a particular value of the independent variable, we can simply spread this contribution uniformly between $x_{\mathbf{A}_i}^{(k)}$ and $x_{\mathbf{B}_i}^{(k)}$.
+%\todo{Should we add a diagram showing this?}
+Thus we define $t_{i,j}^{(\alpha,\epsilon)}(x_i)$ to be the local sensitivity of the output $y_j$ upon the input $x_i$:
 \begin{equation}
     t_{i,j}^{(\alpha,\epsilon)}(x) = \mathlarger{\mathlarger{\sum}}_{k=1}^N \left| y_{\mathbf{A},j}^{(k)} - y_{\mathbf{A}_{\mathbf{B}_i},j}^{(k)} \right| ^ \alpha  \cdot \frac{\mathbbm{1}_{\min \left\{ x_{\mathbf{A}_i}^{(k)} , x_{\mathbf{B}_i}^{(k)} \right\} - \frac{\epsilon}{2} \leq x \leq \max \left\{ x_{\mathbf{A}_i}^{(k)} , x_{\mathbf{B}_i}^{(k)} \right\} + \frac{\epsilon}{2}}}{\left| x_{\mathbf{A}_i}^{(k)} - x_{\mathbf{B}_i}^{(k)} + \epsilon \right|} \label{eq:tx}
 \end{equation}
@@ -223,28 +238,21 @@ We are now in a position to specify an algorithm for iteratively adapting the ex
     \item Evaluate $y_{\mathbf{A},j}^{(k)}$, $y_{\mathbf{B},j}^{(k)}$, and $y_{\mathbf{A}_{\mathbf{B}_i},j}^{(k)}$ for these $M$ new rows of the design matrix.
     \item Proceed to step \#2 above.
 \end{enumerate}
-For computational efficiency, the $\hat{V}_j$ and $T_{i,j}^{(\alpha,\epsilon)}(x)$ can be updated during each iteration instead of being computed from scratch. The batch size can be $M = 1$ if an online algorithm is desired. The parameter $\epsilon$ should be set to a small positive value. The parameter $\alpha$ allows one to make the sampling completely non-adapative ($\alpha = 0$) or highly adaptive (large positive $\alpha$): setting $\alpha$ too high may result in missing sensitivities in the input space if the batch size is too small, since the algorithm may home in on the first observed region of sensitivity, thus missing other areas of high sensitivity.
+For computational efficiency, the $\hat{V}_j$ and $T_{i,j}^{(\alpha,\epsilon)}(x)$ can be updated during each iteration instead of being computed from scratch. The batch size can be $M = 1$ if an online (i.e., serial piece-by-piece) algorithm is desired. The parameter $\epsilon$ should be set to a small positive value. The parameter $\alpha$ allows one to make the sampling completely non-adapative ($\alpha = 0$) or highly adaptive (large positive $\alpha$): setting $\alpha$ too high may result in missing sensitivities in the input space if the batch size is too small, since the algorithm may home in on the first observed region of sensitivity, thus missing other areas of high sensitivity. After the prominent regions of sensitivity had been mapped with $\alpha > 0$, one could even use a negative $\alpha$ in subsequent iterations to search the nominally insensitive regions of the input space for hidden sensitivities that were not previously detected due to insufficiently dense sampling.
 
 
 \section{Results}
 \label{sec:result}
 
-We evaluate the adaptive iterative approach to sensitivity analysis first using a toy model with a manageably small number of dimensions, and then with a complex simulation.
+We evaluate the adaptive iterative approach to sensitivity analysis first using a synthetic example model created for demonstration purposes, which has a manageably small number of dimensions, and then using a complex simulation developed for industry analyses.
 
 
-\subsection{Toy Model}
+\subsection{Synthetic Example Model}
 \label{sec:toy}
 
-The Appendix~\ref{sec:toy} describes a class of toy models that have strong nonlinearities, configurable dimensionality, and specifiable discontinuities in the dependent variables. For convenience in exploring, visualization, and plotting results, we select three input dimensions ($m = 3$) and three output dimensions ($n = 3$). The model has a zeroth-order discontinuity in the output at $x_1 \doteq 0.59$, a first-order discontinuity in the output at $x_2 \doteq 0.95$, and a second-order discontinuity in the output at $x_3 \doteq 0.10$.
+Appendix~\ref{sec:toyapp} describes a class of synthetic example models that have strong nonlinearities, configurable dimensionality, and specifiable discontinuities in the dependent variables. For convenience in exploring, visualizing, and plotting results, we select three input dimensions ($m = 3$) and three output dimensions ($n = 3$). To capture different types of behavior encountered in investigations of computer models used in industrial applications, the model has a zeroth-order discontinuity in the output at $x_1 \doteq 0.59$, a first-order discontinuity in the output at $x_2 \doteq 0.95$, and a second-order discontinuity in the output at $x_3 \doteq 0.10$.
 
-Table~\ref{tab:toyglobal} shows that the global sensitivities when $N = M = 1000$ exhibit a diversity of sensitive and insensitive first-order and total sensitivity indices, thus confirming the requisitive behavior desirable for a toy model. The cumulative sensitivities $T_{i,j}^{(2,\epsilon)}(x)$ in Figure~\ref{fig:toy-tx} approach the global sensitivities $\hat{T}_{i,j}$ of Table~\ref{tab:toyglobal} as $x_i \rightarrow 1$. One can also see mild nonlinearities near the $x_1 \doteq 0.59$, and $x_3 \doteq 0.10$ discontinuities of the model:\ this hints at the practicality of decomposing the global sensitivity into local contributions. The local sensitivity density in Figure~\ref{fig:toy-tau} demonstrates the viability of the method and highlights the stronger contributions to the local variance near the model's zeroth- and first-order discontinuities ($x_1 \doteq 0.59$ and $x_2 \doteq 0.95$). Averaging over the output dimensions yields the average local sensitivity density in Figure~\ref{fig:toy-taubar}.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1.00\linewidth]{figures/toy-tx.png}
-    \caption{Cumulative local sensitivity $T_{i,j}^{(2,\epsilon)}(x)$ for the toy model, with $\epsilon = 10^{-4}$ and $N = M = 1000$.}
-    \label{fig:toy-tx}
-\end{figure}
+Table~\ref{tab:toyglobal} shows that the global sensitivities when $N = M = 1000$ exhibit a diversity of sensitive and insensitive first-order and total sensitivity indices, thus confirming the requisite behavior desirable for a synthetic example model. The cumulative sensitivities $T_{i,j}^{(2,\epsilon)}(x)$ in Figure~\ref{fig:toy-tx} approach the global sensitivities $\hat{T}_{i,j}$ of Table~\ref{tab:toyglobal} as $x_i \rightarrow 1$. One can also see mild nonlinearities near the $x_1 \doteq 0.59$, and $x_3 \doteq 0.10$ discontinuities of the model:\ this hints at the practicality of decomposing the global sensitivity into local contributions. The local sensitivity density in Figure~\ref{fig:toy-tau} demonstrates the viability of the method and highlights the stronger contributions to the local variance near the model's zeroth- and first-order discontinuities ($x_1 \doteq 0.59$ and $x_2 \doteq 0.95$). Averaging over the output dimensions yields the average local sensitivity density in Figure~\ref{fig:toy-taubar}.
 
 \begin{table}
 \centering
@@ -263,25 +271,32 @@ $y_1$ & 0.01 & 0.00 & 0.99 \\
 $y_2$ & 0.94 & 0.00 & 0.38 \\
 $y_3$ & 0.41 & 0.00 & 0.87 \\
 \end{tabular}
-\caption{Global first-order sensitivity (left) and total sensitivities (right) results for the toy model, on a scale from zero (insensitive) to one (sensitive), with one large batch of observations $N = M = 1000$.}
+\caption{Global first-order sensitivity (left) and total sensitivities (right) results for the synthetic example model, on a scale from zero (insensitive) to one (sensitive), with one large batch of observations $N = M = 1000$.}
 \label{tab:toyglobal}
 \end{table}
 
 \begin{figure}
     \centering
+    \includegraphics[width=1.00\linewidth]{figures/toy-tx.png}
+    \caption{Cumulative local sensitivity $T_{i,j}^{(2,\epsilon)}(x)$ for the synthetic example model, with $\epsilon = 10^{-4}$ and $N = M = 1000$.}
+    \label{fig:toy-tx}
+\end{figure}
+
+\begin{figure}
+    \centering
     \includegraphics[width=1.00\linewidth]{figures/toy-tau.png}
-    \caption{Sensitivity density $\tau_{i,j}^{(2,\epsilon)}(x)$ for the toy model, with $\epsilon = 10^{-4}$ and $N = M = 1000$. (Note that the density is smoothed using a general additive model.)}
+    \caption{Sensitivity density $\tau_{i,j}^{(2,\epsilon)}(x)$ for the synthetic example model, with $\epsilon = 10^{-4}$ and $N = M = 1000$. (Note that the density is smoothed using a general additive model.)}
     \label{fig:toy-tau}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=1.00\linewidth]{figures/toy-taubar.png}
-    \caption{Averaged sensitivity density $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the toy model, with $\epsilon = 10^{-4}$ and $N = M = 1000$. The three dashed orange lines mark locations of the toy model's discontinuities with respect to its three independent variables: the algorithm successfully detects the zeroth- and first-order discontinuities in $x_1$ and $x_2$, respectively, but not the second-order discontinuity in $x_3$. (Note that the density is smoothed using a general additive model.)}
+    \caption{Averaged sensitivity density $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the synthetic example model, with $\epsilon = 10^{-4}$ and $N = M = 1000$. The three dashed orange lines mark locations of the synthetic example model's discontinuities with respect to its three independent variables: the algorithm successfully detects the zeroth- and first-order discontinuities in $x_1$ and $x_2$, respectively, but not the second-order discontinuity in $x_3$. (Note that the density is smoothed using a general additive model.)}
     \label{fig:toy-taubar}
 \end{figure}
 
-Figure~\ref{fig:toy-density} shows how densely different regions are sampled in the first five batches of $M = 10$ observations when the sensitivity analysis proceeds adaptively. This illustrates how quickly the algorithm detects the areas of higher variance as it transitions from the initial uniform sampling to the sensitivity-emphasizing sampling:\ the first batch samples only slightly non-uniformly, simply because of the few points used from the Sobol' sequence, but by the fifth batch the density forms a noticeable bias towards the higher-variance regions. Moreover, Figure~\ref{fig:toy-sample} displays two-dimensional projections of actual sampling for a batch size of $M = 10$, with 100 batches so $N = 1000$:\ one can see that the algorithm explores the whole space while evolving to concentrate on areas of high sensitivity. Overall, there is no evidence that the algorithm prematurely ``locks into'' local regions of high variance or neglects global exploration of the input space. Employing a higher value of the $\alpha$ exponent in Eq.~(\ref{eq:taux}) would focus sampling near the high-variance regions, while reducing that value near to zero would make the sampling more uniform.
+Figure~\ref{fig:toy-density} shows how densely different regions are sampled in the first five batches of $M = 10$ observations when the sensitivity analysis proceeds adaptively. This illustrates how quickly the algorithm detects the areas of higher variance as it transitions from the initial uniform sampling to the sensitivity-emphasizing sampling:\ the first batch samples only slightly non-uniformly, simply because of the few points used from the Sobol' sequence, but by the fifth batch the density forms a noticeable bias towards the higher-variance regions. Moreover, Figure~\ref{fig:toy-sample} displays two-dimensional projections of actual sampling for a batch size of $M = 10$, with 100 batches so $N = 1000$:\ one can see that the algorithm explores the whole space while evolving to concentrate on areas of high sensitivity. Overall, there is no evidence that the algorithm prematurely ``locks into'' local regions of high variance or neglects global exploration of the input space. Employing a higher value of the $\alpha$ exponent in Eq.~(\ref{eq:taux}) would focus sampling near the high-variance regions, while reducing that value to nearly zero would make the sampling more uniform.
 
 \begin{figure}
     \centering
@@ -289,7 +304,7 @@ Figure~\ref{fig:toy-density} shows how densely different regions are sampled in 
     \includegraphics[width=0.300\linewidth]{figures/toy-density2.png}
     \includegraphics[width=0.300\linewidth]{figures/toy-density3.png}
     \includegraphics[width=0.075\linewidth,clip=true,trim={1.5in 0 2.15 2.15}]{figures/toy-density.png}
-    \caption{Density of sampling in the first five batches of $M = 10$ observations in adaptive sampling according to $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the toy model, with $\epsilon = 10^{-4}$, starting with a first batch that uniformly samples. The three dashed orange lines mark locations of the toy model's discontinuities with respect to its three independent variables: the algorithm successfully detects the zeroth- and first-order discontinuities in $x_1$ and $x_2$, respectively, but not the second-order discontinuity in $x_3$. (Note that the density is smoothed using a general additive model.)}
+    \caption{Density of sampling in the first five batches of $M = 10$ observations in adaptive sampling according to $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the synthetic example model, with $\epsilon = 10^{-4}$, starting with a first batch that uniformly samples. The three dashed orange lines mark locations of the synthetic example model's discontinuities with respect to its three independent variables: the algorithm successfully detects the zeroth- and first-order discontinuities in $x_1$ and $x_2$, respectively, but not the second-order discontinuity in $x_3$. (Note that the density is smoothed using a general additive model.)}
     \label{fig:toy-density}
 \end{figure}
 
@@ -299,7 +314,7 @@ Figure~\ref{fig:toy-density} shows how densely different regions are sampled in 
     \includegraphics[width=0.300\linewidth]{figures/toy-sample23.png}
     \includegraphics[width=0.300\linewidth]{figures/toy-sample31.png}
     \includegraphics[width=0.075\linewidth,clip=true,trim={1.5in 0 2.15 2.15}]{figures/toy-sample.png}
-    \caption{Two-dimensional projections of adaptive sampling according to $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the toy model, with $\epsilon = 10^{-4}$ and for 100 sequential batches of $M = 10$ observations, so $N = 1000$. The solid black lines mark locations of the toy model's discontinuities with respect to its three independent variables: the algorithm successfully detects the zeroth- and first-order discontinuities in $x_1$ and $x_2$, respectively, but not the second-order discontinuity in $x_3$.}
+    \caption{Two-dimensional projections of adaptive sampling according to $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the synthetic example model, with $\epsilon = 10^{-4}$ and for 100 sequential batches of $M = 10$ observations, so $N = 1000$. The solid black lines mark locations of the synthetic example model's discontinuities with respect to its three independent variables: the algorithm successfully detects the zeroth- and first-order discontinuities in $x_1$ and $x_2$, respectively, but not the second-order discontinuity in $x_3$.}
     \label{fig:toy-sample}
 \end{figure}
 
@@ -307,9 +322,13 @@ Figure~\ref{fig:toy-density} shows how densely different regions are sampled in 
 \subsection{Bioproduct Transition Dynamics Model}
 \label{sec:btd}
 
-We now turn to the demonstration of the adaptive-sampling algorithm on a large, complexe bioenergy supply-chain simulation, the Bioproduct Transition Dynamics (BTD) model \cite{hanes_supporting_2020} \cite{hanes_transition_2019} \cite{hanes_introduction_2018} \cite{hanes_system_2018}.\todo{\small Should we cite the two papers/reports in preparation?} The model constitutes a decision support tool for bioproduct industry stakeholders to inform decisions around R\&D investments in and government support of bioproducts. It is a systems dynamics model consisting of 100+ coupled ordinary stochastic differential equations with initial-value boundary conditions. For the purposes of this example, we consider the subset of the most interesting $k = 84$ input parameters (independent variables) and $n = 49$ output metrics (dependent variables evaluated at the final time of the simulation). We omit further discussion of the model here and treat it as a ``black box'': see Hanes \textit{et al.} for details of the model \cite{btd_tech_report} and a global sensitivity analysis of it \cite{btd_analysis_paper}. Because of the high dimensionality of the input and output spaces, we simply focus here are on few illustrative computations.
+We now turn to the demonstration of the adaptive-sampling algorithm on a large, complex bioenergy supply-chain simulation, the Bioproduct Transition Dynamics (BTD) model \citep{hanes_supporting_2020,hanes_transition_2019,hanes_introduction_2018,hanes_system_2018}.
+%\todo{\small Should we cite the two papers/reports in preparation?}
+The model constitutes a decision support tool for bioproduct industry stakeholders to inform decisions around R\&D investments in and government support of bioproducts. It is a system-dynamics (SD) model consisting of coupled ordinary stochastic differential equations with initial-value boundary conditions.
+%\todo{We can count the number of stocks and delays in the BTD to determine how many ODEs it has.}
+For the purposes of this example, we consider the subset of the most interesting $k = 84$ input parameters (independent variables) and $n = 49$ output metrics (dependent variables evaluated at the final time of the simulation). We omit further discussion of the model here and just treat it as a ``black box'': see Hanes et al.\ for details of the model (\citeyear{btd_tech_report}) and for a global sensitivity analysis of it (\citeyear{btd_analysis_paper}). Because of the high dimensionality of the input and output spaces, we simply focus here are on few illustrative computations.
 
-Figure~\ref{fig:btd-t} plots the cumulative local sensitivity $T_{i,j}^{(2,\epsilon)}(x)$ for the output metric ($j$) ``demo plant construction'' for sixteen representative input parameters ($i$), with $N = 2500$. We see a variety of trends, ranging from flat (non-sensitive), to uniformly increasing (equal contributions to output variance over the input range), to sporadic (concentration of local contributions to the variance). (Here we have selected the strongest sensitivities from the 84 input parameters.) The scatter in the bootstrapped cumulative local sensitivity emphasizes the need for large enough ensemble size in the experimental design. Note, particularly, the sensitivity with respect to the ``random seed'' variable, which represents the random-seed for the BTD's stochasticity:\ one sees the expected linear trend in the cumulative sensitivity, which indicates uniform contributions to the variance as the random seed is changed.
+Figure~\ref{fig:btd-t} plots the cumulative local sensitivity $T_{i,j}^{(2,\epsilon)}(x)$ for the output metric ($j$) ``demo plant construction'' for sixteen representative input parameters ($i$), with $N = 2500$. We see a variety of trends, ranging from flat (non-sensitive), to uniformly increasing (equal contributions to output variance over the input range), to sporadic (concentration of local contributions to the variance). (Here, for the purpose of display, we have selected the strongest sensitivities from the 84 input parameters.) The scatter in the bootstrapped cumulative local sensitivity emphasizes the need for large enough ensemble size in the experimental design. Note, particularly, the sensitivity with respect to the ``random seed'' variable, which represents the initial seed value of the pseudo-random number generator for the BTD's stochasticity:\ one sees the expected linear trend in the cumulative sensitivity, which indicates uniform contributions to the variance as the random seed is changed.
 
 \begin{figure}
     \centering
@@ -318,19 +337,19 @@ Figure~\ref{fig:btd-t} plots the cumulative local sensitivity $T_{i,j}^{(2,\epsi
     \label{fig:btd-t}
 \end{figure}
 
-Transforming the $T_{i,j}^{(2,\epsilon)}(x)$ of Figure~\ref{fig:btd-t} into sensitivity densities, $\tau_{i,j}^{(2,\epsilon)}(x)$, yields the non-uniform sampling in Figure~\ref{fig:btd-tau}. The modes in these densities echo the corresponding high-slope regions in the cumulative sensitivity. When the sensitivity densities for all of the output variables are averaged, Figure~\ref{fig:btd-taubar1} results. (Here the 30 strongest sensitivities of the 84 are plotted.) Even the small first batch with $M = 10$ weakly identifies many of patterns in the larger $N = 2500$ sample. Comparison with Fig.~\ref{fig:btd-tau} demonstrates that the averaging sometimes mutes the single-output sensitivity density for the ``demo plant construction'' metrics. Noteably, the ``random stream'' sensitivity density becomes nearly uniform after averaging when $N = 2500$. As previously noted, alterning $\alpha$ of Eq.~(\ref{eq:taux}) tunes the emphasis on high variance regions.
+Transforming the $T_{i,j}^{(2,\epsilon)}(x)$ of Figure~\ref{fig:btd-t} into sensitivity densities, $\tau_{i,j}^{(2,\epsilon)}(x)$, yields the non-uniform sampling in Figure~\ref{fig:btd-tau}. The modes in these densities echo the corresponding high-slope regions in the cumulative sensitivity. When the sensitivity densities for all of the output variables are averaged, Figure~\ref{fig:btd-taubar1} results. (Here, for compactness of display, the 30 strongest sensitivities of the 84 are plotted.) Even the small first batch with $M = 10$ weakly identifies many of the patterns present in the larger $N = 2500$ sample. Comparison with Fig.~\ref{fig:btd-tau} demonstrates that the averaging sometimes mutes the single-output sensitivity density for the ``demo plant construction'' metrics. Notably, the ``random stream'' sensitivity density becomes nearly uniform after averaging when $N = 2500$. As previously noted, altering $\alpha$ of Eq.~(\ref{eq:taux}) would tune the emphasis on high-variance regions.
 
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/btd-tau.png}
-    \caption{Sensitivity density $\tau_{i,j}^{(2,\epsilon)}(x)$ for the BTD model, with $j =$ ``demo plant construction'' and $N = M = 2500$. (Note that the density is smoothed using LOESS, with dark gray bands for the confidence interval of the smoothed curve.)}
+    \caption{Sensitivity density $\tau_{i,j}^{(2,\epsilon)}(x)$ for the BTD model, with $j =$ ``demo plant construction'' and $N = M = 2500$. (Note that the density is smoothed using LOWESS, with dark gray bands for the confidence interval of the smoothed curve.)}
     \label{fig:btd-tau}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=\linewidth]{figures/btd-taubar1.png}
-    \caption{Average sensitivity density $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the BTD model, for the first batch of $M = 10$ observations (blue with dark gray) and for the full set of $N = 2500$ observations (orange). (Note that the density is smoothed using LOESS, with dark gray bands for the confidence interval of the smoothed curve.)}
+    \caption{Average sensitivity density $\overline{\tau}_i^{(2,\epsilon)}(x)$ for the BTD model, for the first batch of $M = 10$ observations (blue with dark gray) and for the full set of $N = 2500$ observations (orange). (Note that the density is smoothed using LOWESS, with dark gray bands for the confidence interval of the smoothed curve.)}
     \label{fig:btd-taubar1}
 \end{figure}
 
@@ -338,41 +357,51 @@ Transforming the $T_{i,j}^{(2,\epsilon)}(x)$ of Figure~\ref{fig:btd-t} into sens
 \section{Discussion}
 \label{sec:discuss}
 
-The examples of the toy model and the BTD demonstrate the computational practicality of the method and its ability to identify local input regions of relatively high variance in model output. These examples do not indicate any tendency for the algorithm to lock into a local region of high variance, ignoring the lower variance regions, but they do show that the algorithm detects the higher variance regions in early batches when even when the batch size is as low as $M = 10$.
+The examples of the synthetic example model and the BTD simulation demonstrate the computational practicality of the method and its ability to identify local input regions of relatively high variance in model output. These examples do not indicate any tendency for the algorithm to lock into a local region of high variance, ignoring the lower variance regions, but they do show that the algorithm detects the higher variance regions in early batches even when the batch size is as low as $M = 10$.
 
-Furthermore, the local sensitivity computations do not rely on partitioning the input, which would result in regions with insufficient numbers of observations within small partitions (either on the boundary of or in the interior of the domain of the independent variable):\ the block/column-replacment experimental design strategy of Sec.~\ref{sec:design} and the interval averaging of Eq.~(\ref{eq:tx}) ensure sufficient observations attributed to each $x$ to keep confidence intervals for the local sensitivity densities uniform over $x$.
+Furthermore, the local sensitivity computations do not rely on partitioning the input, which would result in regions with insufficient numbers of observations within small partitions (either on the boundary of or in the interior of the domain of the independent variable):\ the block/column-replacement experimental design strategy of Sec.~\ref{sec:design} and the interval averaging of Eq.~(\ref{eq:tx}) ensure sufficient observations attributed to each $x$ to keep confidence intervals for the local sensitivity densities generally uniform over $x$. (A contrary formulation of local sensitivity that instead relied on partitioning observations by their independent variable would suffer from sample-size issues in areas where partitions only contain a few observations.)
 
-The method does not explicitly handle time series:\ in the examples, we just use the final time step of the model for the output variables. More sophisticated methods like tensor decomposition \cite{bugbee_enabling_2019} or functional principal components analysis \cite{ramsay_functional_2013} would appropriately handle the multivariate timeseries that comprise the output in simulation models, but the method would remain the same after such preprocessing was applied.\todo{\small We can include a discussion or parts of Joanne's write-up on function PCA here.}
+The method does not explicitly handle time series:\ in the examples, we just use the final time step of the model for the output variables. More sophisticated methods like tensor decomposition \citep{bugbee_enabling_2019} or functional principal components analysis \citep{ramsay_functional_2013} would appropriately handle the multivariate time series that comprise the output in simulation models, but the local-sensitivity method would remain the same after such preprocessing was applied.
+%\todo{\small We can include a discussion or parts of Joanne's write-up on function PCA here.}
 
-One substantial deficiency of the method is that it projects $\overline{\tau}_i^{(\alpha,\epsilon)}(x)$ onto the $x_i$ coordinate axes for the inputs. This may make it difficult for the algorithm to detect high-variance regions defined by combinations of inputs over supported over a small range, especially when the volume of such regions is miniscule compared to the whole input space. Such would challenge any algorithm, but we anticipate that the fact that Eq.~(\ref{eq:taubar}) is constructed for \textit{total} sensitivity instead of \text{first-order} sensitivity provides it an avenue for detecting such small-volume regions once they have been adequately sampled.
+One substantial deficiency of the method is that it projects $\overline{\tau}_i^{(\alpha,\epsilon)}(x)$ onto the $x_i$ coordinate axes for the inputs. This may make it difficult for the algorithm to detect high-variance regions defined by combinations of inputs supported over a tight interval, especially when the volume of such regions is minuscule compared to the whole input space. Such phenomena would challenge any algorithm, but we anticipate that the fact that Eq.~(\ref{eq:taubar}) is constructed for \textit{total} sensitivity instead of \text{first-order} sensitivity provides an avenue for detecting such small-volume regions once they have been adequately sampled.
 
-Finally, we note that an implementer of the algorithm has the option to adjust $\alpha$ at each batch in the iterative experiment, thus having the ability to tune the intensity of sampling around the high-variance regions. Beyond that, all or part of the density $\overline{\tau}_i^{(\alpha,\epsilon)}(x)$ may be modified or overriden at any iteration according to an analyst's interests in particular input regions. (In fact, densities could also be altered according to non-variance criteria such as in sequential design strategies \cite{box_statistics_2005}.) This all suggests that the approach could be embedded in a larger Bayesian framework that starts with a prior for the sampling density and then updates it both according to the algorithm and to user-input preferences.
+Finally, we note that an implementer of the algorithm has the option to adjust $\alpha$ at each batch in the iterative experiment, thus having the ability to tune the intensity of sampling around the high-variance regions. Beyond that, all or part of the density $\overline{\tau}_i^{(\alpha,\epsilon)}(x)$ may be modified or overridden at any iteration according to an analyst's interests in particular input regions. (In fact, densities could also be altered according to non-variance criteria such as in sequential design strategies \citep{box_statistics_2005}.) This all suggests that the approach could be embedded in a larger Bayesian framework that starts with a prior for the sampling density and then updates it both according to the algorithm and to user-specified preferences.
 
 
 \section{Conclusion}
 \label{sec:conclude}
 
-We have constructed a local total sensitivity index that decomposes the global total sensitivity conditions by independent variables, and then shown how this local sensitivity index can be employed in a new method of experimental design that sequentially and adaptively samples the domain of a multivariate function according to local contributions to the global variance. The intensity of sampling of high-variance regions can be easily be tuned during the algorithm's iterations. The example application demonstrates performance on a toy model with known discontinuities in its output and to a production-quality simulation used in energy analysis highlights the practicality and insightfulness of the algorithm.
+We have constructed a local total sensitivity index that decomposes the global total sensitivity conditions by independent variables, and then shown how this local sensitivity index can be employed in a new method of experimental design that sequentially and adaptively samples the domain of a multivariate function according to local contributions to the global variance. The intensity of sampling of high-variance regions can easily be tuned during the algorithm's iterations. The example application demonstrates performance on a synthetic example model with known discontinuities in its output and to a production-quality simulation used in energy analysis highlighting the practicality and insightfulness of the algorithm.
 
-
+\if0\blind {
 \section*{Acknowledgements}
 
-This work was authored in part by the National Renewable Energy Laboratory, operated by Alliance for Sustainable Energy, LLC, for the U.S. Department of Energy (DOE) under Contract No. DE-AC36-08GO28308. Funding provided by the Department of Energy Office of Energy Efficiency and Renewable Energy Bioenergy Technologies Office. The views expressed in the article do not necessarily represent the views of the DOE or the U.S.\ Government. The U.S.\ Government retains and the publisher, by accepting the article for publication, acknowledges that the U.S.\ Government retains a nonexclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this work, or allow others to do so, for U.S. Government purposes.\todo{\small Add the LANL disclaimer to the acknowledgements.}
+This work was authored in part by the National Renewable Energy Laboratory, operated by Alliance for Sustainable Energy, LLC, for the U.S. Department of Energy (DOE) under Contract No. DE-AC36-08GO28308. Funding provided by the Department of Energy Office of Energy Efficiency and Renewable Energy Bioenergy Technologies Office. The views expressed in the article do not necessarily represent the views of the DOE or the U.S.\ Government. The U.S.\ Government retains and the publisher, by accepting the article for publication, acknowledges that the U.S.\ Government retains a nonexclusive, paid-up, irrevocable, worldwide license to publish or reproduce the published form of this work, or allow others to do so, for U.S. Government purposes.
 
+Los Alamos National Laboratory, an affirmative action/equal opportunity employer, is operated by Triad National Security, LLC for the National Nuclear Security Administration of U.S. Department of Energy under contract 89233218CNA000001. By approving this article, the publisher recognizes that the U.S. Government retains royalty-free license to publish or reproduce the published form of this article as work performed under the auspices of the U.S. Department of Energy. Los Alamos National Laboratory strongly supports academic freedom and a researcher’s right to publish; as an institution, however, the Laboratory does not endorse the viewpoint of a publication or guarantee its technical correctness.
+
+} \fi
 
 %%%% FIXME: Comment out the following command before submitting.
 %\nocite{*}
 
-\printbibliography
+%%%%\printbibliography
+%%%%%\todo{Clean up .bib file.}
+
+
+\bibliographystyle{jasa3}
+
+\bibliography{sequential-sensitivity}
 
 
 \appendix
 
 
-\section{Toy Model}
+\section{Synthetic Example Model}
 \label{sec:toyapp}
 
-This toy model consists of a nonlinear ordinary differential equation for $y_j$ as a function of $x_i$, with $i \in \{ 1 \ldots m \}$ and $j \in \{ 1 \ldots n \}$:
+This synthetic example model consists of a nonlinear ordinary differential equation for $y_j$ as a function of $x_i$, with $i \in \{ 1 \ldots m \}$ and $j \in \{ 1 \ldots n \}$:
 \begin{equation*}
     \frac{dy}{dt} = \kappa \cdot y \ z \ \left( 1 - \sigma \cdot y \  z \right) ,
 \end{equation*}
@@ -380,9 +409,9 @@ where
 \begin{equation*}
     z_j = \sum_{i=1}^m \mathbbm{1}_{j \in L_i} \mathbbm{1}_{x_i \ge \xi_i} \zeta_i \left( x_i - \xi_i \right)^{\delta_i} .
 \end{equation*}
-The parameters $\xi_i$ define locations of discontinuities and the parameters $\delta_i$ specify the degree of those discontinuities. The parameters $L_i$ affect the mixing of the input variables into the output, as do the matrices $\kappa$ and $\sigma$. The model was designed to exhibit nontrivial and nonlinear behavior with tunable discontinuous behavior. It can be used as a timeseries generator or just evaluated at a specified final time.
+The parameters $\xi_i$ define locations of discontinuities and the parameters $\delta_i$ specify the degree of those discontinuities. The parameters $L_i$ affect the mixing of the input variables into the output, as do the matrices $\kappa$ and $\sigma$. The model was designed to exhibit nontrivial and nonlinear behavior with tunable discontinuous behavior. It can be used as a time series generator or just evaluated at a specified final time.
 
-The particular instantiation of the toy model studied in this paper uses the following parameter values:
+The particular instantiation of the synthetic example model studied in this paper uses the following parameter values:
 \begin{align*}
     m & = 3
     \\
@@ -405,7 +434,12 @@ The particular instantiation of the toy model studied in this paper uses the fol
     \sigma & = \begin{bmatrix} 0.0294 & 0.1668 & 0.5788 \\ 0.1046 & 0.1705 & 0.2749 \\ -0.1258 & -0.0712 & 0.7372 \end{bmatrix}
 \end{align*}
 
-The following R code implements this toy model:
+\if0\blind {
+The following R code, developed by the authors at the National Renewable Energy Laboratory, implements this synthetic example model:
+} \fi
+\if1\blind {
+The following R code implements this synthetic example model:
+} \fi
 
 \begin{small}
 \begin{verbatim}
